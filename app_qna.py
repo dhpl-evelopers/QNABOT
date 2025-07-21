@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import uuid
+import time
 
 # --- CONFIG ---
 st.set_page_config(
@@ -10,14 +11,20 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Hide Streamlit default elements
+# --- UI STYLING ---
 hide_streamlit_style = """
     <style>
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     .stDeployButton, .stStatusWidget {display: none !important;}
-    [data-testid="stChatInput"] {border: 1px solid #c9a45d !important;}
+    
+    [data-testid="stChatInput"] {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
     .stButton>button {
         transition: all 0.3s ease;
     }
@@ -26,11 +33,13 @@ hide_streamlit_style = """
     }
     </style>
 """
+
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-# Constants
+# --- BACKEND URL ---
 CHAT_API_URL = "https://ringexpert-backend.azurewebsites.net/ask"
 
+# --- QUICK QUESTIONS ---
 QUICK_QUESTIONS = [
     "What is Rings & I?",
     "Do you customize rings?",
@@ -41,38 +50,47 @@ QUICK_QUESTIONS = [
 
 # --- SESSION INIT ---
 if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": "Hi, I'm your RingExpert! 💍 Ask me anything about diamonds, designs, prices or appointments."}]
+    st.session_state.messages = [
+        {"role": "assistant", "content": "Hi, I'm your RingExpert! 💍 Ask me anything about diamonds, designs, prices or appointments."}
+    ]
 if "user_id" not in st.session_state:
     st.session_state.user_id = f"guest_{uuid.uuid4().hex[:8]}"
 
-# --- CHAT DISPLAY ---
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+# --- STREAMING BOT RESPONSE ---
+def stream_response(text):
+    message_placeholder = st.empty()
+    full_response = ""
+    for word in text.split():
+        full_response += word + " "
+        message_placeholder.markdown(full_response + "▌")
+        time.sleep(0.05)
+    message_placeholder.markdown(full_response)
 
-# --- MESSAGE HANDLING (OPTIMIZED) ---
-def handle_message(message, from_button=False):
+# --- CACHED API RESPONSE ---
+@st.cache_data(show_spinner=False)
+def get_cached_response(question):
+    response = requests.post(CHAT_API_URL, json={"question": question}, timeout=10)
+    response.raise_for_status()
+    return response.json().get("answer", "Sorry, I didn't understand that.")
+
+# --- MESSAGE HANDLER ---
+def handle_message(message):
     # Add user message
     st.session_state.messages.append({"role": "user", "content": message})
 
-    # Display user message immediately
     with st.chat_message("user"):
         st.markdown(message)
 
     try:
-        # Get bot response
-        response = requests.post(
-            CHAT_API_URL,
-            json={"question": message},
-            timeout=10
-        )
-        response.raise_for_status()
-        answer = response.json().get("answer", "Sorry, I didn't understand that.")
+        # Always get from backend
+        answer = get_cached_response(message)
 
-        # Add and display bot response
-        st.session_state.messages.append({"role": "assistant", "content": answer})
+        # Directly display without stream delay
         with st.chat_message("assistant"):
             st.markdown(answer)
+
+        # Save response
+        st.session_state.messages.append({"role": "assistant", "content": answer})
 
     except Exception as e:
         error_msg = f"⚠ Error: {str(e)}"
@@ -80,20 +98,19 @@ def handle_message(message, from_button=False):
         with st.chat_message("assistant"):
             st.error(error_msg)
 
-    # ❌ Remove this:
-    # if from_button:
-    #     st.rerun()
 
-    
-   
+# --- DISPLAY CHAT HISTORY ---
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
-# --- QUICK QUESTION BUTTONS (OPTIMIZED) ---
-st.markdown("#### Quick Questions:")
+# --- QUICK QUESTION BUTTONS ---
+st.markdown("#### 🔹 Quick Questions:")
 cols = st.columns(len(QUICK_QUESTIONS))
 for i, question in enumerate(QUICK_QUESTIONS):
     if cols[i].button(question, use_container_width=True, key=f"qq_{i}"):
-        handle_message(question, from_button=True)
+        handle_message(question)
 
-# --- CHAT INPUT ---
+# --- CHAT INPUT BOX ---
 if prompt := st.chat_input("Ask me anything about rings..."):
     handle_message(prompt)
