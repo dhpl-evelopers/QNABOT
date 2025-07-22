@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: qnabot
+    runtime: python
+    buildCommand: ""
+    startCommand: streamlit run app_qna.py --server.port=$PORT --server.enableCORS=false
+    envVars:
+      - key: PORT
+        value: 10000
