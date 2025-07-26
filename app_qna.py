@@ -44,252 +44,148 @@ query_params = st.query_params
 is_embed = query_params.get("embed", ["0"])[0] == "1"
 
 # --- CUSTOM CSS FOR UI ---
-st.markdown("""<style>
-
-
-#MainMenu, footer, header {visibility: hidden;}
-
-/* Layout Structure */
-.block-container {
-    padding-top: 0 !important;
-}
-
-/* Header Styles */
-.header-bar {
-    background-color: #000000;
-    color: white;
-    font-weight: bold;
-    font-size: 18px;
-    padding: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-top-left-radius: 14px;
-    border-top-right-radius: 14px;
-}
-.header-bar img {
-    height: 20px;
-    margin-right: 8px;
-}
-
-/* Text Styles */
-.chat-title {
-    font-size: 20px;
-    font-weight: 600;
-    margin: 16px 0 8px 0;
-    text-align: center;
-}
-.helper-text {
-    font-size: 13px;
-    text-align: center;
-    margin-bottom: 20px;
-    color: #555555;
-}
-
-/* Chat Message Styling */
-.stChatMessage {
-    font-size: 15px;
-    line-height: 1.6;
-}
-
-
-/* Button Container */
-.button-container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    margin: 0 auto;
-    padding: 0 15px;
-}
-
-/* Button Grid */
-.button-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-    width: 100%;
-    max-width: 550px;
-}
-
-/* Button Styling */
-.stButton>button {
-    width: 100% !important;
-    height: 100% !important;
-    min-height: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: white;
-    color: black;
-    border-radius: 14px;
-    padding: 10px 12px;
-    font-size: 12px;
-    font-weight: 500;
-    font-family: 'Oregon', serif;
-    box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
-    transition: all 0.2s ease;
-    border: none;
-    margin: 0;
-}
-
-.stButton>button:hover {
-    background: #c9a45d !important;
-    color: white !important;
-}
-
-/* Mobile Responsiveness */
-@media (max-width: 768px) {
-    .button-grid {
-        gap: 10px;
-    }
-    .stButton>button {
-        font-size: 11px;
-        padding: 8px 6px;
-    }
-}
-
-@media (max-width: 480px) {
-    .button-grid {
-        grid-template-columns: 1fr;
-        max-width: 300px;
-    }
-}
-            /* Mobile-specific fixes */
-@media (max-width: 768px) {
-    .button-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 10px !important;
-        padding: 0 10px !important;
-    }
-    
-    .stButton>button {
-        font-size: 11px !important;
-        padding: 8px 5px !important;
-        min-height: 40px !important;
-    }
-    
-    /* Fix viewport scaling */
-    @viewport {
-        width: device-width;
-        zoom: 1.0;
-    }
-    
-    /* Prevent horizontal scrolling */
+st.markdown("""
+    <style>
+    /* === Base Reset & Hide Elements === */
+    #MainMenu, footer, header {visibility: hidden;}
     html, body {
         overflow-x: hidden !important;
         width: 100% !important;
     }
-}
-
-/* Small phones (portrait) */
-@media (max-width: 480px) {
-    .button-grid {
-        gap: 8px !important;
-    }
     
-    .stButton>button {
-        font-size: 10px !important;
-        padding: 6px 4px !important;
-    }
-}
-
-/* Very small phones */
-@media (max-width: 320px) {
-    .button-grid {
-        grid-template-columns: 1fr !important;
-        max-width: 280px !important;
-    }
-}
-
-
-/* Chat Input Styling */
-[data-testid="stChatInput"] {
-    border: 1px solid #c9a45d !important;
-    border-radius: 12px !important;
-    padding: 8px;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-[data-testid="stChatInput"] input {
-    border-radius: 10px !important;
-    padding: 10px !important;
-}
-
-/* Force Light Theme */
-@media (prefers-color-scheme: dark) {
-    html, body, button, input, textarea {
-        background-color: #ffffff !important;
-        color: #000000 !important;
-    }
-    [data-testid="stChatInput"] > div {
-        background-color: #ffffff !important;
-    }
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
+    /* === Layout Structure === */
     .block-container {
-        padding-left: 12px;
-        padding-right: 12px;
+        padding-top: 0 !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
     }
     
-    /* Hide scrollbars if present */
-    html, body {
-        overflow-x: hidden;
+    /* === Typography === */
+    .chat-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin: 16px 0 8px 0;
+        text-align: center;
     }
-}
-
-@media (min-width: 769px) {
-    .button-grid {
-        max-width: 600px;
+    .helper-text {
+        font-size: 13px;
+        text-align: center;
+        margin-bottom: 20px;
+        color: #555555;
+    }
+    .stChatMessage {
+        font-size: 15px;
+        line-height: 1.6;
     }
     
-    button[kind="primary"] {
-        font-size: 12px;
-        padding: 10px 8px;
+    /* === Button Grid System === */
+    .button-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin: 0 auto 20px auto;
     }
-}
-
-@media (max-width: 400px) {
-    button[kind="primary"] {
-        font-size: 10px;
-        padding: 6px 4px;
-    }
-}
-
-@media (max-width: 320px) {
+    
     .button-grid {
-        grid-template-columns: 1fr !important;
-        max-width: 280px !important;
-    }
-}
-            @media only screen and (max-width: 600px) {
-  .your-container-class {
-    font-size: 14px; /* Adjust as needed */
-    padding: 10px; /* Adjust spacing */
-  }
-  
-  /* If it's a list, you might want to stack items vertically */
-  .your-list-class {
-    flex-direction: column;
-  }
-}
-            .your-text-elements {
-  font-size: clamp(14px, 3vw, 18px); /* Min 14px, scales with viewport, max 18px */
-}
-            @media (max-width: 600px) {
-    body {
-        font-size: 14px;  /* Smaller font for mobile */
-        line-height: 1.4;  /* Better spacing */
-    }
-    /* Ensure text containers don’t overflow */
-    .text-container {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        width: 100%;
+        max-width: 550px;
         padding: 0 10px;
-        word-wrap: break-word;
     }
-}
-</style>""", unsafe_allow_html=True)
+    
+    /* === Button Design === */
+    .stButton>button {
+        width: 100% !important;
+        min-height: 45px;
+        background: white !important;
+        color: black !important;
+        border-radius: 14px !important;
+        padding: 10px 8px !important;
+        font-size: 12px !important;
+        font-family: 'Oregon', serif !important;
+        font-weight: 500 !important;
+        box-shadow: 1px 1px 3px rgba(0,0,0,0.1) !important;
+        border: none !important;
+        margin: 0 !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        line-height: 1.3 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+        transition: all 0.2s ease !important;
+    }
+    
+    .stButton>button:hover {
+        background: #c9a45d !important;
+        color: white !important;
+        transform: translateY(-1px);
+    }
+    
+    /* === Mobile Responsiveness === */
+    /* Tablets & Large Phones */
+    @media (max-width: 768px) {
+        .button-grid {
+            gap: 10px !important;
+            padding: 0 8px !important;
+        }
+        .stButton>button {
+            font-size: 11px !important;
+            padding: 8px 6px !important;
+            min-height: 42px !important;
+        }
+    }
+    
+    /* Small Phones */
+    @media (max-width: 480px) {
+        .button-grid {
+            gap: 8px !important;
+        }
+        .stButton>button {
+            font-size: 10px !important;
+            padding: 8px 4px !important;
+            min-height: 40px !important;
+        }
+    }
+    
+    /* Very Small Phones (Single Column) */
+    @media (max-width: 350px) {
+        .button-grid {
+            grid-template-columns: 1fr !important;
+            max-width: 300px !important;
+            gap: 6px !important;
+        }
+    }
+    
+    /* === Chat Input === */
+    [data-testid="stChatInput"] {
+        border: 1px solid #c9a45d !important;
+        border-radius: 12px !important;
+        padding: 8px !important;
+        max-width: 600px !important;
+        margin: 0 auto !important;
+    }
+    
+    [data-testid="stChatInput"] input {
+        border-radius: 10px !important;
+        padding: 10px 12px !important;
+    }
+    
+    /* === Dark Mode Override === */
+    @media (prefers-color-scheme: dark) {
+        html, body, button, input, textarea {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+        }
+        [data-testid="stChatInput"] > div {
+            background-color: #ffffff !important;
+        }
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 
 
@@ -378,24 +274,16 @@ questions = [
 
 # Create columns for the button grid
 col1, col2 = st.columns(2)
-
 with st.container():
     st.markdown('<div class="button-container">', unsafe_allow_html=True)
     st.markdown('<div class="button-grid">', unsafe_allow_html=True)
     
     for i, question in enumerate(questions):
-        if i % 2 == 0:
-            with col1:
-                if st.button(question, key=f"btn_{i}"):
-                    handle_message(question)
-        else:
-            with col2:
-                if st.button(question, key=f"btn_{i}"):
-                    handle_message(question)
+        if st.button(question, key=f"btn_{i}"):
+            handle_message(question)
     
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
-
 
 
 # --- CHAT HISTORY (Appears below prompt section) ---
