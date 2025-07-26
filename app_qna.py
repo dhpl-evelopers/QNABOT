@@ -41,7 +41,6 @@ st.markdown("""
 is_embed = "embed" in st.query_params
 
 
-
 # --- CUSTOM CSS FOR UI ---
 st.markdown("""
     <style>
@@ -96,33 +95,34 @@ st.markdown("""
     
     /* === Button Design === */
     .stButton>button {
-        width: 100% !important;
-        min-height: 45px;
-        background: white !important;
-        color: black !important;
-        border-radius: 14px !important;
-        padding: 10px 8px !important;
-        font-size: 12px !important;
-        font-family: 'Oregon', serif !important;
-        font-weight: 500 !important;
-        box-shadow: 1px 1px 3px rgba(0,0,0,0.1) !important;
-        border: none !important;
-        margin: 0 !important;
-        white-space: normal !important;
-        word-wrap: break-word !important;
-        line-height: 1.3 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        text-align: center !important;
-        transition: all 0.2s ease !important;
-    }
-    
-    .stButton>button:hover {
-        background: #c9a45d !important;
-        color: white !important;
-        transform: translateY(-1px);
-    }
+  all: unset;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  min-height: 52px !important;
+  text-align: center !important;
+  font-family: 'Oregon', serif !important;
+  font-size: 13px !important;
+  padding: 12px 16px !important;
+  background-color: #fff !important;
+  border-radius: 20px !important;
+  border: 2px solid #000 !important;
+  box-shadow: 3px 3px 0px 0px #999 !important;
+  line-height: 1.4 !important;
+  word-break: break-word !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.stButton>button:hover {
+  transform: translateY(-2px) !important;
+  background-color: #c9a45d !important;
+  color: white !important;
+  box-shadow: 3px 3px 0px 0px #c9a45d !important;
+}
+
     
     /* === Mobile Responsiveness === */
     /* Tablets & Large Phones */
@@ -160,6 +160,28 @@ st.markdown("""
 }
 
     }
+            .button-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+@media (max-width: 480px) {
+  .button-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .stButton>button {
+    font-size: 12px !important;
+    padding: 10px 12px !important;
+    min-height: 48px !important;
+  }
+}
+
     
     /* === Chat Input === */
     [data-testid="stChatInput"] {
@@ -178,6 +200,14 @@ st.markdown("""
   width: 380px;
   height: 580px;
 }
+            html, body {
+  background-color: white !important;
+  background-image: url("https://cdn.shopify.com/s/files/1/0843/6917/8903/files/your-faded-logo.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 70%;
+}
+
 
     /* === Dark Mode Override === */
     @media (prefers-color-scheme: dark) {
