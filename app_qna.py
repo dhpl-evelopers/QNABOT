@@ -8,9 +8,10 @@ import re
 st.set_page_config(
     page_title="AI RingExpert – RINGS & I",
     page_icon="💍",
-    layout="centered",
+    layout="wide",  # 👈 changed from "centered"
     initial_sidebar_state="collapsed"
 )
+
 
 st.markdown("""
     <style>
@@ -88,36 +89,30 @@ st.markdown("""
     
     .button-grid {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 12px;
-        width: 100%;
-        max-width: 550px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        max-width: 520px;
+        margin: 0 auto 30px auto;
         padding: 0 10px;
     }
     
     /* === Button Design === */
     .stButton>button {
-        width: 100% !important;
-        min-height: 45px;
-        background: white !important;
-        color: black !important;
-        border-radius: 14px !important;
-        padding: 10px 8px !important;
-        font-size: 12px !important;
         font-family: 'Oregon', serif !important;
+        font-size: 13px !important;
         font-weight: 500 !important;
-        box-shadow: 1px 1px 3px rgba(0,0,0,0.1) !important;
-        border: none !important;
-        margin: 0 !important;
-        white-space: normal !important;
-        word-wrap: break-word !important;
-        line-height: 1.3 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        text-align: center !important;
-        transition: all 0.2s ease !important;
+        border-radius: 12px !important;
+        padding: 12px 10px !important;
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #ccc !important;
+        box-shadow: 3px 3px 0px #ccc !important;
+        transition: 0.2s ease-in-out;
     }
+             @media (max-width: 480px) {
+        .button-grid {
+            grid-template-columns: 1fr;
+        }
     
     .stButton>button:hover {
         background: #c9a45d !important;
@@ -251,10 +246,9 @@ def handle_message(message):
 
 
 
-
 # --- TITLES ---
 st.markdown('<div class="chat-title">Want to know more about RINGS & I?</div>', unsafe_allow_html=True)
-st.markdown('<div class="helper-text">Tap a Button or Startt Typing</div>', unsafe_allow_html=True)
+st.markdown('<div class="helper-text">Tap a Button or Start Typing</div>', unsafe_allow_html=True)
 
 
  
@@ -262,8 +256,8 @@ st.markdown('<div class="helper-text">Tap a Button or Startt Typing</div>', unsa
 
 
 # --- BUTTON RENDERING ---
-# --- BUTTON RENDERING ---
-# --- BUTTON RENDERING ---
+
+
 questions = [
     "What Is RINGS & I?", "Where Is Your Studio?",
     "Natural or Lab-Grown Diamonds?", "What's the Price Range?",
@@ -271,19 +265,15 @@ questions = [
     "Ring Making & Delivery Time?", "Can I Customize My Ring?",
     "Do You Have Ready-to-Buy Rings?", "How Can I Book an Appointment?"
 ]
+# --- BUTTON GRID RENDERING (Responsive 2-column with shadow) ---
+st.markdown('<div class="button-grid">', unsafe_allow_html=True)
 
-# Create columns for the button grid
-col1, col2 = st.columns(2)
-with st.container():
-    st.markdown('<div class="button-container">', unsafe_allow_html=True)
-    st.markdown('<div class="button-grid">', unsafe_allow_html=True)
-    
-    for i, question in enumerate(questions):
-        if st.button(question, key=f"btn_{i}"):
-            handle_message(question)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+for i, question in enumerate(questions):
+    if st.button(question, key=f"btn_{i}"):
+        handle_message(question)
+
+st.markdown('</div>', unsafe_allow_html=True)
+
 
 
 # --- CHAT HISTORY (Appears below prompt section) ---
