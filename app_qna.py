@@ -12,7 +12,8 @@ st.set_page_config(
 )
 
 # --- EMBED MODE DETECTION ---
-query_params = st.experimental_get_query_params()
+query_params = st.query_params
+
 is_embed = query_params.get("embed", ["0"])[0] == "1"
 
 # --- CUSTOM CSS FOR UI ---
@@ -139,16 +140,7 @@ def handle_message(message):
         with st.chat_message("assistant"):
             st.error(error_msg)
 
-# --- ONLY IF NOT IN EMBED MODE ---
-if not is_embed:
-    # --- HEADER BAR ---
-    st.markdown("""<div class="header-bar">
-      <div style="display: flex; align-items: center;">
-        <img src="https://cdn.shopify.com/s/files/1/0843/6917/8903/files/ringexpert-icon.png" />
-        AI. RingExpert
-      </div>
-      <div style="cursor: pointer;">&#10006;</div>
-    </div>""", unsafe_allow_html=True)
+
 
     # --- TITLES ---
     st.markdown('<div class="chat-title">Want to know more about RINGS & I?</div>', unsafe_allow_html=True)
