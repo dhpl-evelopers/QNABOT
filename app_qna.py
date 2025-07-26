@@ -143,6 +143,45 @@ button[kind="primary"]:hover, button[type="submit"]:hover {
     grid-template-columns: 1fr !important;
   }
 }
+.button-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 0 14px;
+    margin-bottom: 24px;
+}
+
+button[kind="primary"], button[type="submit"] {
+    all: unset;
+    display: inline-block;
+    background-color: white;
+    color: #000;
+    border-radius: 14px;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 500;
+    font-family: 'Oregon', serif;
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    cursor: pointer;
+    text-align: center;
+    word-break: break-word;
+    width: 100%;
+    height: auto;
+    transition: all 0.2s ease;
+}
+
+/* Hover effect */
+button[kind="primary"]:hover, button[type="submit"]:hover {
+    background-color: #c9a45d;
+    color: white;
+}
+
+/* Fallback to single column on very small phones */
+@media screen and (max-width: 330px) {
+    .button-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
 
            
 
