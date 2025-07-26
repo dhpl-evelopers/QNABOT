@@ -38,10 +38,8 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# --- EMBED MODE DETECTION ---
-query_params = st.query_params
+is_embed = "embed" in st.experimental_get_query_params()
 
-is_embed = query_params.get("embed", ["0"])[0] == "1"
 
 # --- CUSTOM CSS FOR UI ---
 st.markdown("""
@@ -152,12 +150,14 @@ st.markdown("""
     }
     
     /* Very Small Phones (Single Column) */
-    @media (max-width: 350px) {
-        .button-grid {
-            grid-template-columns: 1fr !important;
-            max-width: 300px !important;
-            gap: 6px !important;
-        }
+  @media (max-width: 350px) {
+    .button-grid {
+        grid-template-columns: 1fr !important;
+        max-width: 300px !important;
+        gap: 6px !important;
+    }
+}
+
     }
     
     /* === Chat Input === */
@@ -173,7 +173,11 @@ st.markdown("""
         border-radius: 10px !important;
         padding: 10px 12px !important;
     }
-    
+    #chatbot-modal {
+  width: 380px;
+  height: 580px;
+}
+
     /* === Dark Mode Override === */
     @media (prefers-color-scheme: dark) {
         html, body, button, input, textarea {
@@ -245,68 +249,26 @@ def handle_message(message):
             st.error(error_msg)
 
 
+# FINAL: Responsive 2-column button layout using HTML inside Streamlit
 
 
+if not is_embed:
+    st.markdown("<h5 style='text-align:center; font-family:Georgia;'>Want to know more about RINGS & I?</h5>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; font-size:13px; color:#777;'>Tap a Button or Start Typing</p>", unsafe_allow_html=True)
 
+    buttons = [
+        "What Is RINGS & I?", "Where Is Your Studio?",
+        "Natural or Lab-Grown Diamonds?", "What's the Price Range?",
+        "Which Metals Do You Use?", "Which Metal Purities Do You Offer?",
+        "Ring Making & Delivery Time?", "Can I Customize My Ring?",
+        "Do You Have Ready-to-Buy Rings?", "How Can I Book an Appointment?"
+    ]
 
-
-
-
-# --- TITLES ---
-st.markdown('<div class="chat-title">Want to know more about RINGS & I?</div>', unsafe_allow_html=True)
-st.markdown('<div class="helper-text">Tap a Button or Start Typing</div>', unsafe_allow_html=True)
-
-
- 
-
-
-
-# --- BUTTON RENDERING ---
-# --- BUTTON RENDERING ---
-# --- BUTTON RENDERING ---
-questions = [
-    "What Is RINGS & I?", "Where Is Your Studio?",
-    "Natural or Lab-Grown Diamonds?", "What's the Price Range?",
-    "Which Metals Do You Use?", "Which Metal Purities Do You Offer?",
-    "Ring Making & Delivery Time?", "Can I Customize My Ring?",
-    "Do You Have Ready-to-Buy Rings?", "How Can I Book an Appointment?"
-]
-
-# --- SMART 2-COLUMN BUTTON RENDERING (FULLY RESPONSIVE) ---
-with st.container():
-    st.markdown('<div class="button-container">', unsafe_allow_html=True)
-    cols = st.columns(2)  # Two equal columns
-
-    for i, question in enumerate(questions):
+    cols = st.columns(2)
+    for i, question in enumerate(buttons):
         with cols[i % 2]:
-            st.markdown(
-                f"""
-                <div style="margin-bottom: 12px;">
-                    <button style="
-                        width: 100%;
-                        padding: 10px 6px;
-                        font-size: 11px;
-                        font-family: 'Oregon', serif;
-                        font-weight: 500;
-                        background: white;
-                        border: 1px solid #ddd;
-                        border-radius: 12px;
-                        box-shadow: 1px 1px 3px rgba(0,0,0,0.08);
-                        cursor: pointer;
-                        transition: all 0.2s ease;
-                        white-space: normal;
-                        word-wrap: break-word;
-                        line-height: 1.3;
-                        text-align: center;
-                    " onclick="parent.postMessage({{type: 'streamlit:sendMessage', message: '{question}' }}, '*')">
-                        {question}
-                    </button>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-    st.markdown('</div>', unsafe_allow_html=True)
-
+            if st.button(question, key=f"btn_{i}"):
+                handle_message(question)
 
 
 
