@@ -45,23 +45,16 @@ is_embed = query_params.get("embed", ["0"])[0] == "1"
 
 # --- CUSTOM CSS FOR UI ---
 st.markdown("""<style>
-@import url('https://fonts.googleapis.com/css2?family=Lora:wght@300&display=swap');
-@font-face {
-    font-family: 'Oregon';
-    src: url('https://cdn.shopify.com/s/files/1/0843/6917/8903/files/OregonLDO-Light.woff2') format('woff2');
-    font-weight: 300;
-    font-style: normal;
-}
 
-html, body, div, input, textarea, button {
-    font-family: 'Oregon', 'Georgia', serif !important;
-    background-color: #ffffff;
-    color: #000000;
-}
 
 #MainMenu, footer, header {visibility: hidden;}
 
-/* Header and text styles */
+/* Layout Structure */
+.block-container {
+    padding-top: 0 !important;
+}
+
+/* Header Styles */
 .header-bar {
     background-color: #000000;
     color: white;
@@ -78,121 +71,156 @@ html, body, div, input, textarea, button {
     height: 20px;
     margin-right: 8px;
 }
+
+/* Text Styles */
 .chat-title {
     font-size: 20px;
     font-weight: 600;
-    margin-top: 18px;
+    margin: 16px 0 8px 0;
     text-align: center;
-    color: #000000;
 }
 .helper-text {
-    font-size: 13.5px;
+    font-size: 13px;
     text-align: center;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
     color: #555555;
 }
 
-/* Chat message styling */
+/* Chat Message Styling */
 .stChatMessage {
     font-size: 15px;
     line-height: 1.6;
 }
 
-/* Button grid styling */
-.button-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    padding: 0 12px;
-    margin-bottom: 12px;
+
+/* Button Container */
+.button-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+    padding: 0 15px;
 }
 
-/* Button styling */
-button[kind="primary"], button[type="submit"] {
-    all: unset;
+/* Button Grid */
+.button-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    width: 100%;
+    max-width: 550px;
+}
+
+/* Button Styling */
+.stButton>button {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 45px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: white;
-    color: #000;
+    background: white;
+    color: black;
     border-radius: 14px;
-    padding: 6px 10px;
-    font-size: 11px;
+    padding: 10px 12px;
+    font-size: 12px;
     font-weight: 500;
-    box-shadow: 1.5px 1.5px 3px rgba(0, 0, 0, 0.15);
-    cursor: pointer;
-    text-align: center;
-    word-break: break-word;
-    width: 100%;
-    min-height: 40px;
+    font-family: 'Oregon', serif;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
     transition: all 0.2s ease;
+    border: none;
+    margin: 0;
 }
 
-button[kind="primary"]:hover, button[type="submit"]:hover {
-    background-color: #c9a45d;
-    color: white;
+.stButton>button:hover {
+    background: #c9a45d !important;
+    color: white !important;
 }
 
-/* "See more" button styling */
-button[data-testid="baseButton-secondary"] {
-    font-size: 11px !important;
-    margin: 0 auto 12px auto !important;
-    display: block !important;
-    width: fit-content !important;
-    background: transparent !important;
-    box-shadow: none !important;
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .button-grid {
+        gap: 10px;
+    }
+    .stButton>button {
+        font-size: 11px;
+        padding: 8px 6px;
+    }
 }
 
-/* Input styling */
+@media (max-width: 480px) {
+    .button-grid {
+        grid-template-columns: 1fr;
+        max-width: 300px;
+    }
+}
+
+
+/* Chat Input Styling */
 [data-testid="stChatInput"] {
     border: 1px solid #c9a45d !important;
     border-radius: 12px !important;
     padding: 8px;
-}
-.stTextInput>div>div>input {
-    border-radius: 10px;
-    padding: 10px;
-    border: 1px solid #c9a45d;
-}
-[data-testid="stChatInput"] input:focus {
-    outline: none !important;
-    border: 1px solid #c9a45d !important;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
-/* Layout adjustments */
-.block-container {
-    padding-top: 0 !important;
+[data-testid="stChatInput"] input {
+    border-radius: 10px !important;
+    padding: 10px !important;
 }
 
-/* Force light theme */
+/* Force Light Theme */
 @media (prefers-color-scheme: dark) {
     html, body, button, input, textarea {
         background-color: #ffffff !important;
         color: #000000 !important;
-        border-color: #000000 !important;
     }
-    ::placeholder {
-        color: #888888 !important;
+    [data-testid="stChatInput"] > div {
+        background-color: #ffffff !important;
     }
 }
 
-/* Input container overrides */
-[data-testid="stChatInput"] > div,
-[data-testid="stChatInput"] div[data-baseweb="input"] {
-    background-color: #ffffff !important;
-    border-radius: 12px !important;
-}
-[data-testid="stChatInput"] svg {
-    color: #000000 !important;
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .block-container {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+    
+    /* Hide scrollbars if present */
+    html, body {
+        overflow-x: hidden;
+    }
 }
 
-/* Responsive adjustments */
-@media screen and (max-width: 330px) {
+@media (min-width: 769px) {
+    .button-grid {
+        max-width: 600px;
+    }
+    
+    button[kind="primary"] {
+        font-size: 12px;
+        padding: 10px 8px;
+    }
+}
+
+@media (max-width: 400px) {
+    button[kind="primary"] {
+        font-size: 10px;
+        padding: 6px 4px;
+    }
+}
+
+@media (max-width: 320px) {
     .button-grid {
         grid-template-columns: 1fr !important;
+        max-width: 280px !important;
     }
 }
 </style>""", unsafe_allow_html=True)
+
+
 
 
 # --- API CONFIG ---
@@ -255,55 +283,47 @@ def handle_message(message):
 
 
 
-# --- PROMPT TOGGLE STATE ---
-# --- PROMPT TOGGLE STATE ---
-if "show_all_prompts" not in st.session_state:
-    st.session_state.show_all_prompts = False
+
 
 # --- TITLES ---
 st.markdown('<div class="chat-title">Want to know more about RINGS & I?</div>', unsafe_allow_html=True)
 st.markdown('<div class="helper-text">Tap a Button or Start Typing</div>', unsafe_allow_html=True)
 
-# --- QUESTION SETS ---
-# --- QUESTION SETS ---
-all_questions = [
-    "What Is RINGS & I?", "Where is your studio?",
-    "Natural or Lab-Grown Diamonds?", "What’s the price range?",
-    "Which metals do you use?", "Which metal purities do you offer?",
-    "Ring making & delivery time?", "Can I customize my ring?",
-    "Do you have ready-to-buy rings?", "How can I book an appointment?"
+
+ 
+
+
+
+# --- BUTTON RENDERING ---
+# --- BUTTON RENDERING ---
+# --- BUTTON RENDERING ---
+questions = [
+    "What Is RINGS & I?", "Where Is Your Studio?",
+    "Natural or Lab-Grown Diamonds?", "What's the Price Range?",
+    "Which Metals Do You Use?", "Which Metal Purities Do You Offer?",
+    "Ring Making & Delivery Time?", "Can I Customize My Ring?",
+    "Do You Have Ready-to-Buy Rings?", "How Can I Book an Appointment?"
 ]
-initial_questions = all_questions[:5]
-extra_questions = all_questions[5:]
 
-# --- QUICK BUTTONS AS GRID ---
-def render_buttons(questions, key_prefix="btn"):
+# Create columns for the button grid
+col1, col2 = st.columns(2)
+
+with st.container():
+    st.markdown('<div class="button-container">', unsafe_allow_html=True)
     st.markdown('<div class="button-grid">', unsafe_allow_html=True)
-
-
-    for idx, question in enumerate(questions):
-        if st.button(label=question, key=f"{key_prefix}_{idx}_btn"):
-             handle_message(question)
-
+    
+    for i, question in enumerate(questions):
+        if i % 2 == 0:
+            with col1:
+                if st.button(question, key=f"btn_{i}"):
+                    handle_message(question)
+        else:
+            with col2:
+                if st.button(question, key=f"btn_{i}"):
+                    handle_message(question)
+    
     st.markdown('</div>', unsafe_allow_html=True)
-
-
-
-
-
-    # Listen to button presses
-    if "custom_question" in st.session_state:
-        handle_message(st.session_state.pop("custom_question"))
-
-
-
-# Render buttons
-render_buttons(initial_questions)
-if not st.session_state.show_all_prompts:
-    if st.button("see more..", key="see_more"):
-        st.session_state.show_all_prompts = True
-else:
-    render_buttons(extra_questions, key_prefix="btn_extra")
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 
