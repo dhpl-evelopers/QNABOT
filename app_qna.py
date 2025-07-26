@@ -11,6 +11,10 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# --- EMBED MODE DETECTION ---
+query_params = st.experimental_get_query_params()
+is_embed = query_params.get("embed", ["0"])[0] == "1"
+
 # --- CUSTOM CSS FOR UI ---
 st.markdown("""<style>
 @import url('https://fonts.googleapis.com/css2?family=Lora:wght@300&display=swap');
@@ -135,35 +139,37 @@ def handle_message(message):
         with st.chat_message("assistant"):
             st.error(error_msg)
 
-# --- HEADER BAR ---
-st.markdown("""<div class="header-bar">
-  <div style="display: flex; align-items: center;">
-    <img src="https://cdn.shopify.com/s/files/1/0843/6917/8903/files/ringexpert-icon.png" />
-    AI. RingExpert
-  </div>
-  <div style="cursor: pointer;">&#10006;</div>
-</div>""", unsafe_allow_html=True)
+# --- ONLY IF NOT IN EMBED MODE ---
+if not is_embed:
+    # --- HEADER BAR ---
+    st.markdown("""<div class="header-bar">
+      <div style="display: flex; align-items: center;">
+        <img src="https://cdn.shopify.com/s/files/1/0843/6917/8903/files/ringexpert-icon.png" />
+        AI. RingExpert
+      </div>
+      <div style="cursor: pointer;">&#10006;</div>
+    </div>""", unsafe_allow_html=True)
 
-# --- TITLES ---
-st.markdown('<div class="chat-title">Want to know more about RINGS & I?</div>', unsafe_allow_html=True)
-st.markdown('<div class="helper-text">Tap a button or Start Typing</div>', unsafe_allow_html=True)
+    # --- TITLES ---
+    st.markdown('<div class="chat-title">Want to know more about RINGS & I?</div>', unsafe_allow_html=True)
+    st.markdown('<div class="helper-text">Tap a button or Start Typing</div>', unsafe_allow_html=True)
 
-# --- QUICK QUESTIONS ---
-quick_questions = [
-    "What Is RINGS & I?", "Where is your studio?",
-    "Natural or Lab-Grown Diamonds?", "What’s the price range?",
-    "Which metals do you use?", "Which metal purities do you offer?",
-    "Ring making & delivery time?", "Can I customize my ring?",
-    "Do you have ready-to-buy rings?", "How can I book an appointment?"
-]
+    # --- QUICK QUESTIONS ---
+    quick_questions = [
+        "What Is RINGS & I?", "Where is your studio?",
+        "Natural or Lab-Grown Diamonds?", "What’s the price range?",
+        "Which metals do you use?", "Which metal purities do you offer?",
+        "Ring making & delivery time?", "Can I customize my ring?",
+        "Do you have ready-to-buy rings?", "How can I book an appointment?"
+    ]
 
-st.markdown('<div class="quick-buttons-container">', unsafe_allow_html=True)
-cols = st.columns(2)
-for idx, question in enumerate(quick_questions):
-    with cols[idx % 2]:
-        if st.button(question, key=f"btn_{idx}"):
-            handle_message(question)
-st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div class="quick-buttons-container">', unsafe_allow_html=True)
+    cols = st.columns(2)
+    for idx, question in enumerate(quick_questions):
+        with cols[idx % 2]:
+            if st.button(question, key=f"btn_{idx}"):
+                handle_message(question)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # --- CHAT HISTORY ---
 for message in st.session_state.messages:
