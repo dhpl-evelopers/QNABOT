@@ -131,6 +131,36 @@ html, body {
     padding-top: 0 !important;
 }
 </style>""", unsafe_allow_html=True)
+st.markdown("""
+<style>
+.button-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);  /* Always 2 columns */
+    gap: 12px;
+    padding: 0 16px;
+    margin-bottom: 20px;
+}
+button[type="submit"] {
+    background-color: white;
+    color: #000;
+    border: 1.5px solid #000000;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Oregon', serif;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+    width: 100%;
+    text-align: center;
+}
+button[type="submit"]:hover {
+    background-color: #c9a45d;
+    color: white;
+    border-color: #c9a45d;
+}
+</style>
+""", unsafe_allow_html=True)
+
 
 # --- API CONFIG ---
 CHAT_API_URL = "https://ringexpert-backend.azurewebsites.net/ask"
@@ -215,11 +245,16 @@ extra_questions = all_questions[5:]
 
 # --- QUICK BUTTONS AS GRID ---
 def render_buttons(questions, key_prefix="btn"):
+    st.markdown('<div class="button-grid">', unsafe_allow_html=True)
     for idx, question in enumerate(questions):
         with st.form(key=f"{key_prefix}_{idx}_form"):
             submitted = st.form_submit_button(label=question)
             if submitted:
                 handle_message(question)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+
 
 
     # Listen to button presses
