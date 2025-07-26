@@ -134,6 +134,24 @@ button[kind="primary"]:hover, button[type="submit"]:hover {
     background-color: #c9a45d;
     color: white;
 }
+            /* 🔒 Force light theme across all browsers/devices */
+@media (prefers-color-scheme: dark) {
+  html, body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  button, input, textarea {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border-color: #000000 !important;
+  }
+
+  ::placeholder {
+    color: #888888 !important;
+  }
+}
+
 </style>
 
 
