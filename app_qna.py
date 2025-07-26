@@ -163,24 +163,31 @@ button[kind="primary"]:hover, button[type="submit"]:hover {
     color: #888888 !important;
   }
 }
-/* 🔒 Force full light theme on chat input field */
-[data-testid="stChatInput"] {
+
+            /* 🔒 Force light background even on left input icon container (chat send icon) */
+[data-testid="stChatInput"] > div {
     background-color: #ffffff !important;
-    color: #000000 !important;
-    border: 1px solid #c9a45d !important;
     border-radius: 12px !important;
 }
 
-[data-testid="stChatInput"] input {
+/* 🔒 Also override the div wrapper around input for some phones */
+[data-testid="stChatInput"] div[data-baseweb="input"] {
     background-color: #ffffff !important;
     color: #000000 !important;
-    border: none !important;
+    border-radius: 12px !important;
 }
 
-[data-testid="stChatInput"]::placeholder,
-[data-testid="stChatInput"] input::placeholder {
-    color: #999999 !important;
+/* 🔒 Reset Streamlit input-icon container */
+[data-testid="stChatInput"] svg {
+    color: #000000 !important;
 }
+
+/* Optional: better white border when focusing */
+[data-testid="stChatInput"] input:focus {
+    outline: none !important;
+    border: 1px solid #c9a45d !important;
+}
+
 
 </style>
 
