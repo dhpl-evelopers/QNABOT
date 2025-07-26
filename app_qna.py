@@ -38,7 +38,8 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-is_embed = "embed" in st.experimental_get_query_params()
+is_embed = "embed" in st.query_params
+
 
 
 # --- CUSTOM CSS FOR UI ---
