@@ -104,36 +104,48 @@ st.markdown("""
 <style>
 .button-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px 12px;
+    grid-template-columns: repeat(2, 1fr);  /* Two buttons side-by-side */
+    gap: 10px 10px;
     padding: 0 12px;
     margin-bottom: 20px;
 }
 
+/* Button Styling */
 button[kind="primary"], button[type="submit"] {
     all: unset;
     display: inline-block;
     background-color: white;
     color: #000;
-    border-radius: 20px;
-    padding: 8px 14px;
-    font-size: 11.5px;
+    border-radius: 16px;
+    padding: 6px 10px;
+    font-size: 11px;   /* 🟢 Compact font for mobile */
     font-weight: 500;
     font-family: 'Oregon', serif;
-    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 1.5px 1.5px 3px rgba(0, 0, 0, 0.15);
     cursor: pointer;
     text-align: center;
     line-height: 1.2;
     word-break: break-word;
-    height: auto;
     width: 100%;
+    height: auto;
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
+/* Hover */
 button[kind="primary"]:hover, button[type="submit"]:hover {
     background-color: #c9a45d;
     color: white;
 }
+
+/* Optional: fallback to 1 column on very narrow phones */
+@media screen and (max-width: 330px) {
+  .button-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+           
+
             /* 🔒 Force light theme across all browsers/devices */
 @media (prefers-color-scheme: dark) {
   html, body {
@@ -150,6 +162,24 @@ button[kind="primary"]:hover, button[type="submit"]:hover {
   ::placeholder {
     color: #888888 !important;
   }
+}
+/* 🔒 Force full light theme on chat input field */
+[data-testid="stChatInput"] {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #c9a45d !important;
+    border-radius: 12px !important;
+}
+
+[data-testid="stChatInput"] input {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border: none !important;
+}
+
+[data-testid="stChatInput"]::placeholder,
+[data-testid="stChatInput"] input::placeholder {
+    color: #999999 !important;
 }
 
 </style>
