@@ -266,13 +266,15 @@ questions = [
     "Do You Have Ready-to-Buy Rings?", "How Can I Book an Appointment?"
 ]
 # --- BUTTON GRID RENDERING (Responsive 2-column with shadow) ---
-st.markdown('<div class="button-grid">', unsafe_allow_html=True)
+# --- BUTTON RENDERING (2-column native layout using st.columns) ---
+cols = st.columns(2)  # Two columns
 
 for i, question in enumerate(questions):
-    if st.button(question, key=f"btn_{i}"):
-        handle_message(question)
+    with cols[i % 2]:  # Alternate between columns
+        if st.button(question, key=f"btn_{i}"):
+            handle_message(question)
 
-st.markdown('</div>', unsafe_allow_html=True)
+
 
 
 
