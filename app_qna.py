@@ -28,17 +28,7 @@ st.markdown("""
     .chat-title, .helper-text, .stChatMessage {
         font-family: 'Oregon', serif !important;
     }
-    .quick-buttons-container button {
-        background-color: white;
-        color: #000;
-        border: 1px solid #c9a45d;
-        font-family: 'Oregon', serif;
-    }
-    .quick-buttons-container button:hover {
-        background-color: #c9a45d;
-        color: white;
-        border: 1px solid #c9a45d;
-    }
+  
     [data-testid="stChatInput"] input {
         font-family: 'Oregon', serif;
         border-radius: 10px;
@@ -90,29 +80,7 @@ html, body {
     margin-bottom: 18px;
     color: #555555;
 }
-.quick-buttons-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 14px;
-    margin-bottom: 20px;
-}
-.quick-buttons-container button {
-    background-color: white;
-    color: #000;
-    border: 1px solid #000000;
-    border-radius: 12px;
-    padding: 8px 14px;
-    font-size: 13px;
-    font-weight: 500;
-    box-shadow: 2px 2px 3px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
-}
-.quick-buttons-container button:hover {
-    background-color: #c9a45d;
-    color: white;
-    border: 1px solid #c9a45d;
-}
+
 .stChatMessage {
     font-size: 15px;
     line-height: 1.6;
@@ -131,35 +99,47 @@ html, body {
     padding-top: 0 !important;
 }
 </style>""", unsafe_allow_html=True)
+
 st.markdown("""
 <style>
 .button-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);  /* Always 2 columns */
-    gap: 12px;
-    padding: 0 16px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px 12px;
+    padding: 0 12px;
     margin-bottom: 20px;
 }
-button[type="submit"] {
+
+button[kind="primary"], button[type="submit"] {
+    all: unset;
+    display: inline-block;
     background-color: white;
     color: #000;
-    border: 1.5px solid #000000;
-    border-radius: 10px;
-    padding: 10px 12px;
-    font-size: 13px;
+    border-radius: 20px;
+    padding: 8px 14px;
+    font-size: 11.5px;
     font-weight: 500;
     font-family: 'Oregon', serif;
-    box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
-    width: 100%;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
     text-align: center;
+    line-height: 1.2;
+    word-break: break-word;
+    height: auto;
+    width: 100%;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
-button[type="submit"]:hover {
+
+button[kind="primary"]:hover, button[type="submit"]:hover {
     background-color: #c9a45d;
     color: white;
-    border-color: #c9a45d;
 }
 </style>
+
+
+
 """, unsafe_allow_html=True)
+
 
 
 # --- API CONFIG ---
@@ -246,11 +226,12 @@ extra_questions = all_questions[5:]
 # --- QUICK BUTTONS AS GRID ---
 def render_buttons(questions, key_prefix="btn"):
     st.markdown('<div class="button-grid">', unsafe_allow_html=True)
+
+
     for idx, question in enumerate(questions):
-        with st.form(key=f"{key_prefix}_{idx}_form"):
-            submitted = st.form_submit_button(label=question)
-            if submitted:
-                handle_message(question)
+        if st.button(label=question, key=f"{key_prefix}_{idx}_btn"):
+             handle_message(question)
+
     st.markdown('</div>', unsafe_allow_html=True)
 
 
