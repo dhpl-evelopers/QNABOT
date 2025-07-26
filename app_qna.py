@@ -154,6 +154,52 @@ st.markdown("""<style>
         max-width: 300px;
     }
 }
+            /* Mobile-specific fixes */
+@media (max-width: 768px) {
+    .button-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+        padding: 0 10px !important;
+    }
+    
+    .stButton>button {
+        font-size: 11px !important;
+        padding: 8px 5px !important;
+        min-height: 40px !important;
+    }
+    
+    /* Fix viewport scaling */
+    @viewport {
+        width: device-width;
+        zoom: 1.0;
+    }
+    
+    /* Prevent horizontal scrolling */
+    html, body {
+        overflow-x: hidden !important;
+        width: 100% !important;
+    }
+}
+
+/* Small phones (portrait) */
+@media (max-width: 480px) {
+    .button-grid {
+        gap: 8px !important;
+    }
+    
+    .stButton>button {
+        font-size: 10px !important;
+        padding: 6px 4px !important;
+    }
+}
+
+/* Very small phones */
+@media (max-width: 320px) {
+    .button-grid {
+        grid-template-columns: 1fr !important;
+        max-width: 280px !important;
+    }
+}
 
 
 /* Chat Input Styling */
@@ -216,6 +262,31 @@ st.markdown("""<style>
     .button-grid {
         grid-template-columns: 1fr !important;
         max-width: 280px !important;
+    }
+}
+            @media only screen and (max-width: 600px) {
+  .your-container-class {
+    font-size: 14px; /* Adjust as needed */
+    padding: 10px; /* Adjust spacing */
+  }
+  
+  /* If it's a list, you might want to stack items vertically */
+  .your-list-class {
+    flex-direction: column;
+  }
+}
+            .your-text-elements {
+  font-size: clamp(14px, 3vw, 18px); /* Min 14px, scales with viewport, max 18px */
+}
+            @media (max-width: 600px) {
+    body {
+        font-size: 14px;  /* Smaller font for mobile */
+        line-height: 1.4;  /* Better spacing */
+    }
+    /* Ensure text containers don’t overflow */
+    .text-container {
+        padding: 0 10px;
+        word-wrap: break-word;
     }
 }
 </style>""", unsafe_allow_html=True)
