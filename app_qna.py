@@ -186,16 +186,20 @@ st.markdown("""
 
 
 .stButton>button {
-    font-size: 11px !important;
-    padding: 6px 8px !important;
+    font-size: 10.5px !important;
+    padding: 6px 6px !important;
     min-height: 38px !important;
-    line-height: 1.2 !important;
+    line-height: 1.25 !important;
     border-radius: 10px !important;
     white-space: normal !important;
     word-break: break-word !important;
     box-shadow: 2px 2px 0px #aaa !important;
     text-align: center !important;
 }
+#chatbot-modal {
+  width: 380px;
+}
+
 
 /* Force 2 columns even on small screens */
 .button-grid {
@@ -295,6 +299,7 @@ with st.container():
         if st.button(question, key=f"btn_{i}"):
             handle_message(question)
     st.markdown('</div>', unsafe_allow_html=True)
+
 
 
 
