@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 import uuid
 import time
+import re
 
 # --- PAGE CONFIG ---
 st.set_page_config(
@@ -10,6 +11,42 @@ st.set_page_config(
     layout="centered",
     initial_sidebar_state="collapsed"
 )
+
+st.markdown("""
+    <style>
+    @font-face {
+        font-family: 'Oregon';
+        src: url('https://cdn.shopify.com/s/files/1/0843/6917/8903/files/OregonLDO-Light.woff2') format('woff2');
+        font-weight: 300;
+        font-style: normal;
+    }
+    html, body, div, input, textarea, button {
+        font-family: 'Oregon', 'Georgia', serif !important;
+        background-color: #ffffff;
+        color: #000000;
+    }
+    .chat-title, .helper-text, .stChatMessage {
+        font-family: 'Oregon', serif !important;
+    }
+    .quick-buttons-container button {
+        background-color: white;
+        color: #000;
+        border: 1px solid #c9a45d;
+        font-family: 'Oregon', serif;
+    }
+    .quick-buttons-container button:hover {
+        background-color: #c9a45d;
+        color: white;
+        border: 1px solid #c9a45d;
+    }
+    [data-testid="stChatInput"] input {
+        font-family: 'Oregon', serif;
+        border-radius: 10px;
+        border: 1px solid #c9a45d !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 
 # --- EMBED MODE DETECTION ---
 query_params = st.query_params
@@ -119,7 +156,18 @@ def stream_response(text):
 def get_cached_response(question):
     response = requests.post(CHAT_API_URL, json={"question": question}, timeout=10)
     response.raise_for_status()
-    return response.json().get("answer", "Sorry, I didn't understand that.")
+    
+
+@st.cache_data(show_spinner=False)
+def get_cached_response(question):
+    response = requests.post(CHAT_API_URL, json={"question": question}, timeout=10)
+    response.raise_for_status()
+    answer = response.json().get("answer", "Sorry, I didn't understand that.")
+
+    # 🧼 Clean out "doc1", "[doc2]", "doc3." etc.
+    cleaned = re.sub(r'\[?doc\d+\]?[.:]?', '', answer, flags=re.IGNORECASE)
+    return cleaned.strip()
+
 
 # --- HANDLING CHAT FLOW ---
 def handle_message(message):
@@ -140,32 +188,90 @@ def handle_message(message):
 
 
 
-    # --- TITLES ---
-    st.markdown('<div class="chat-title">Want to know more about RINGS & I?</div>', unsafe_allow_html=True)
-    st.markdown('<div class="helper-text">Tap a button or Start Typing</div>', unsafe_allow_html=True)
 
-    # --- QUICK QUESTIONS ---
-    quick_questions = [
-        "What Is RINGS & I?", "Where is your studio?",
-        "Natural or Lab-Grown Diamonds?", "What’s the price range?",
-        "Which metals do you use?", "Which metal purities do you offer?",
-        "Ring making & delivery time?", "Can I customize my ring?",
-        "Do you have ready-to-buy rings?", "How can I book an appointment?"
-    ]
 
+
+
+# --- PROMPT TOGGLE STATE ---
+# --- PROMPT TOGGLE STATE ---
+if "show_all_prompts" not in st.session_state:
+    st.session_state.show_all_prompts = False
+
+# --- TITLES ---
+st.markdown('<div class="chat-title">Want to know more about RINGS & I?</div>', unsafe_allow_html=True)
+st.markdown('<div class="helper-text">Tap a Button or Start Typing</div>', unsafe_allow_html=True)
+
+# --- QUESTION SETS ---
+all_questions = [
+    "What Is RINGS & I?", "Where is your studio?",
+    "Natural or Lab-Grown Diamonds?", "What’s the price range?",
+    "Which metals do you use?", "Which metal purities do you offer?",
+    "Ring making & delivery time?", "Can I customize my ring?",
+    "Do you have ready-to-buy rings?", "How can I book an appointment?"
+]
+initial_questions = all_questions[:5]
+extra_questions = all_questions[5:]
+
+# --- BUTTON CONTAINER ---
+st.markdown('<div class="quick-buttons-container">', unsafe_allow_html=True)
+cols = st.columns(2)
+
+# First 5 prompts
+for idx, question in enumerate(initial_questions):
+    with cols[idx % 2]:
+        if st.button(question, key=f"btn_top_{idx}"):
+            handle_message(question)
+
+st.markdown('</div>', unsafe_allow_html=True)
+
+# --- RIGHT-ALIGNED SEE MORE BUTTON ---
+if not st.session_state.show_all_prompts:
+    col1, col2, col3 = st.columns([5, 1, 1])
+    with col3:
+        see_more_clicked = st.button("see more..", key="see_more_button")
+
+        # ✅ FINAL: Target exactly this button and remove border/padding
+        st.markdown("""
+        <style>
+        div[data-testid="stButton"] button[aria-label="see more.."] {
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0px !important;
+            margin: 0px !important;
+            font-size: 13px !important;
+            font-family: 'Oregon', serif !important;
+            color: #000 !important;
+        }
+        div[data-testid="stButton"] button[aria-label="see more.."]:hover {
+            color: #c9a45d !important;
+            text-decoration: underline;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+    if see_more_clicked:
+        st.session_state.show_all_prompts = True
+
+
+
+
+else:
+    # Show remaining 5 prompts (next row)
     st.markdown('<div class="quick-buttons-container">', unsafe_allow_html=True)
     cols = st.columns(2)
-    for idx, question in enumerate(quick_questions):
+    for idx, question in enumerate(extra_questions):
         with cols[idx % 2]:
-            if st.button(question, key=f"btn_{idx}"):
+            if st.button(question, key=f"btn_extra_{idx}"):
                 handle_message(question)
     st.markdown('</div>', unsafe_allow_html=True)
-
-# --- CHAT HISTORY ---
+# --- CHAT HISTORY (Appears below prompt section) ---
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+
+# --- CHAT INPUT ---
 # --- CHAT INPUT ---
 if user_input := st.chat_input("Type Anything..."):
     handle_message(user_input)
