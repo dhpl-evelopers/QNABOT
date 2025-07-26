@@ -46,11 +46,22 @@ is_embed = query_params.get("embed", ["0"])[0] == "1"
 # --- CUSTOM CSS FOR UI ---
 st.markdown("""<style>
 @import url('https://fonts.googleapis.com/css2?family=Lora:wght@300&display=swap');
-html, body {
-    font-family: 'Lora', serif;
-    background-color: #ffffff;
+@font-face {
+    font-family: 'Oregon';
+    src: url('https://cdn.shopify.com/s/files/1/0843/6917/8903/files/OregonLDO-Light.woff2') format('woff2');
+    font-weight: 300;
+    font-style: normal;
 }
+
+html, body, div, input, textarea, button {
+    font-family: 'Oregon', 'Georgia', serif !important;
+    background-color: #ffffff;
+    color: #000000;
+}
+
 #MainMenu, footer, header {visibility: hidden;}
+
+/* Header and text styles */
 .header-bar {
     background-color: #000000;
     color: white;
@@ -81,10 +92,58 @@ html, body {
     color: #555555;
 }
 
+/* Chat message styling */
 .stChatMessage {
     font-size: 15px;
     line-height: 1.6;
 }
+
+/* Button grid styling */
+.button-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 0 12px;
+    margin-bottom: 12px;
+}
+
+/* Button styling */
+button[kind="primary"], button[type="submit"] {
+    all: unset;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    color: #000;
+    border-radius: 14px;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 500;
+    box-shadow: 1.5px 1.5px 3px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    text-align: center;
+    word-break: break-word;
+    width: 100%;
+    min-height: 40px;
+    transition: all 0.2s ease;
+}
+
+button[kind="primary"]:hover, button[type="submit"]:hover {
+    background-color: #c9a45d;
+    color: white;
+}
+
+/* "See more" button styling */
+button[data-testid="baseButton-secondary"] {
+    font-size: 11px !important;
+    margin: 0 auto 12px auto !important;
+    display: block !important;
+    width: fit-content !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Input styling */
 [data-testid="stChatInput"] {
     border: 1px solid #c9a45d !important;
     border-radius: 12px !important;
@@ -95,145 +154,45 @@ html, body {
     padding: 10px;
     border: 1px solid #c9a45d;
 }
-.block-container {
-    padding-top: 0 !important;
-}
-</style>""", unsafe_allow_html=True)
-
-st.markdown("""
-<style>
-.button-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);  /* Two buttons side-by-side */
-    gap: 10px 10px;
-    padding: 0 12px;
-    margin-bottom: 20px;
-}
-
-/* Button Styling */
-button[kind="primary"], button[type="submit"] {
-    all: unset;
-    display: inline-block;
-    background-color: white;
-    color: #000;
-    border-radius: 16px;
-    padding: 6px 10px;
-    font-size: 11px;   /* 🟢 Compact font for mobile */
-    font-weight: 500;
-    font-family: 'Oregon', serif;
-    box-shadow: 1.5px 1.5px 3px rgba(0, 0, 0, 0.15);
-    cursor: pointer;
-    text-align: center;
-    line-height: 1.2;
-    word-break: break-word;
-    width: 100%;
-    height: auto;
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-/* Hover */
-button[kind="primary"]:hover, button[type="submit"]:hover {
-    background-color: #c9a45d;
-    color: white;
-}
-
-/* Optional: fallback to 1 column on very narrow phones */
-@media screen and (max-width: 330px) {
-  .button-grid {
-    grid-template-columns: 1fr !important;
-  }
-}
-.button-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    padding: 0 14px;
-    margin-bottom: 24px;
-}
-
-button[kind="primary"], button[type="submit"] {
-    all: unset;
-    display: inline-block;
-    background-color: white;
-    color: #000;
-    border-radius: 14px;
-    padding: 6px 10px;
-    font-size: 11px;
-    font-weight: 500;
-    font-family: 'Oregon', serif;
-    box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-    cursor: pointer;
-    text-align: center;
-    word-break: break-word;
-    width: 100%;
-    height: auto;
-    transition: all 0.2s ease;
-}
-
-/* Hover effect */
-button[kind="primary"]:hover, button[type="submit"]:hover {
-    background-color: #c9a45d;
-    color: white;
-}
-
-/* Fallback to single column on very small phones */
-@media screen and (max-width: 330px) {
-    .button-grid {
-        grid-template-columns: 1fr !important;
-    }
-}
-
-           
-
-            /* 🔒 Force light theme across all browsers/devices */
-@media (prefers-color-scheme: dark) {
-  html, body {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-  }
-
-  button, input, textarea {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-    border-color: #000000 !important;
-  }
-
-  ::placeholder {
-    color: #888888 !important;
-  }
-}
-
-            /* 🔒 Force light background even on left input icon container (chat send icon) */
-[data-testid="stChatInput"] > div {
-    background-color: #ffffff !important;
-    border-radius: 12px !important;
-}
-
-/* 🔒 Also override the div wrapper around input for some phones */
-[data-testid="stChatInput"] div[data-baseweb="input"] {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-    border-radius: 12px !important;
-}
-
-/* 🔒 Reset Streamlit input-icon container */
-[data-testid="stChatInput"] svg {
-    color: #000000 !important;
-}
-
-/* Optional: better white border when focusing */
 [data-testid="stChatInput"] input:focus {
     outline: none !important;
     border: 1px solid #c9a45d !important;
 }
 
+/* Layout adjustments */
+.block-container {
+    padding-top: 0 !important;
+}
 
-</style>
+/* Force light theme */
+@media (prefers-color-scheme: dark) {
+    html, body, button, input, textarea {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border-color: #000000 !important;
+    }
+    ::placeholder {
+        color: #888888 !important;
+    }
+}
 
+/* Input container overrides */
+[data-testid="stChatInput"] > div,
+[data-testid="stChatInput"] div[data-baseweb="input"] {
+    background-color: #ffffff !important;
+    border-radius: 12px !important;
+}
+[data-testid="stChatInput"] svg {
+    color: #000000 !important;
+}
 
-
-""", unsafe_allow_html=True)
-
+/* Responsive adjustments */
+@media screen and (max-width: 330px) {
+    .button-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+</style>""", unsafe_allow_html=True)
 
 
 # --- API CONFIG ---
