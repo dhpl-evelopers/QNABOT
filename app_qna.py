@@ -254,7 +254,7 @@ def handle_message(message):
 
 # --- TITLES ---
 st.markdown('<div class="chat-title">Want to know more about RINGS & I?</div>', unsafe_allow_html=True)
-st.markdown('<div class="helper-text">Tap a Button or Start Typing</div>', unsafe_allow_html=True)
+st.markdown('<div class="helper-text">Tap a Button or Starttt Typing</div>', unsafe_allow_html=True)
 
 
  
