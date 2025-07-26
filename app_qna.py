@@ -291,11 +291,9 @@ questions = [
 
 with st.container():
     st.markdown('<div class="button-grid">', unsafe_allow_html=True)
-    cols = st.columns(2)
     for i, question in enumerate(questions):
-        with cols[i % 2]:
-            if st.button(question, key=f"btn_{i}"):
-                handle_message(question)
+        if st.button(question, key=f"btn_{i}"):
+            handle_message(question)
     st.markdown('</div>', unsafe_allow_html=True)
 
 
