@@ -202,6 +202,7 @@ st.markdown('<div class="chat-title">Want to know more about RINGS & I?</div>', 
 st.markdown('<div class="helper-text">Tap a Button or Start Typing</div>', unsafe_allow_html=True)
 
 # --- QUESTION SETS ---
+# --- QUESTION SETS ---
 all_questions = [
     "What Is RINGS & I?", "Where is your studio?",
     "Natural or Lab-Grown Diamonds?", "What’s the price range?",
@@ -212,59 +213,31 @@ all_questions = [
 initial_questions = all_questions[:5]
 extra_questions = all_questions[5:]
 
-# --- BUTTON CONTAINER ---
-st.markdown('<div class="quick-buttons-container">', unsafe_allow_html=True)
-cols = st.columns(2)
-
-# First 5 prompts
-for idx, question in enumerate(initial_questions):
-    with cols[idx % 2]:
-        if st.button(question, key=f"btn_top_{idx}"):
-            handle_message(question)
-
-st.markdown('</div>', unsafe_allow_html=True)
-
-# --- RIGHT-ALIGNED SEE MORE BUTTON ---
-if not st.session_state.show_all_prompts:
-    col1, col2, col3 = st.columns([5, 1, 1])
-    with col3:
-        see_more_clicked = st.button("see more..", key="see_more_button")
-
-        # ✅ FINAL: Target exactly this button and remove border/padding
-        st.markdown("""
-        <style>
-        div[data-testid="stButton"] button[aria-label="see more.."] {
-            background-color: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            padding: 0px !important;
-            margin: 0px !important;
-            font-size: 13px !important;
-            font-family: 'Oregon', serif !important;
-            color: #000 !important;
-        }
-        div[data-testid="stButton"] button[aria-label="see more.."]:hover {
-            color: #c9a45d !important;
-            text-decoration: underline;
-        }
-        </style>
-        """, unsafe_allow_html=True)
-
-    if see_more_clicked:
-        st.session_state.show_all_prompts = True
-
-
-
-
-else:
-    # Show remaining 5 prompts (next row)
-    st.markdown('<div class="quick-buttons-container">', unsafe_allow_html=True)
-    cols = st.columns(2)
-    for idx, question in enumerate(extra_questions):
-        with cols[idx % 2]:
-            if st.button(question, key=f"btn_extra_{idx}"):
+# --- QUICK BUTTONS AS GRID ---
+def render_buttons(questions, key_prefix="btn"):
+    for idx, question in enumerate(questions):
+        with st.form(key=f"{key_prefix}_{idx}_form"):
+            submitted = st.form_submit_button(label=question)
+            if submitted:
                 handle_message(question)
-    st.markdown('</div>', unsafe_allow_html=True)
+
+
+    # Listen to button presses
+    if "custom_question" in st.session_state:
+        handle_message(st.session_state.pop("custom_question"))
+
+
+
+# Render buttons
+render_buttons(initial_questions)
+if not st.session_state.show_all_prompts:
+    if st.button("see more..", key="see_more"):
+        st.session_state.show_all_prompts = True
+else:
+    render_buttons(extra_questions, key_prefix="btn_extra")
+
+
+
 # --- CHAT HISTORY (Appears below prompt section) ---
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
