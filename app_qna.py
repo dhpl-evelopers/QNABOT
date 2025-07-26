@@ -100,9 +100,7 @@ CHAT_API_URL = "https://ringexpert-backend.azurewebsites.net/ask"
 
 # --- SESSION INITIALIZATION ---
 if "messages" not in st.session_state:
-    st.session_state.messages = [
-        {"role": "assistant", "content": "Hi, I'm your RingExpert! 💍\nAsk me anything about diamonds, designs, prices or appointments."}
-    ]
+    st.session_state.messages = []
 if "user_id" not in st.session_state:
     st.session_state.user_id = f"guest_{uuid.uuid4().hex[:8]}"
 
