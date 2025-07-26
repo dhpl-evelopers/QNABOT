@@ -254,7 +254,7 @@ def handle_message(message):
 
 # --- TITLES ---
 st.markdown('<div class="chat-title">Want to know more about RINGS & I?</div>', unsafe_allow_html=True)
-st.markdown('<div class="helper-text">Tap a Button or Starttt Typing</div>', unsafe_allow_html=True)
+st.markdown('<div class="helper-text">Tap a Button or Start Typing</div>', unsafe_allow_html=True)
 
 
  
@@ -272,25 +272,42 @@ questions = [
     "Do You Have Ready-to-Buy Rings?", "How Can I Book an Appointment?"
 ]
 
-# Create columns for the button grid
-col1, col2 = st.columns(2)
-
+# --- SMART 2-COLUMN BUTTON RENDERING (FULLY RESPONSIVE) ---
 with st.container():
     st.markdown('<div class="button-container">', unsafe_allow_html=True)
-    st.markdown('<div class="button-grid">', unsafe_allow_html=True)
-    
+    cols = st.columns(2)  # Two equal columns
+
     for i, question in enumerate(questions):
-        if i % 2 == 0:
-            with col1:
-                if st.button(question, key=f"btn_{i}"):
-                    handle_message(question)
-        else:
-            with col2:
-                if st.button(question, key=f"btn_{i}"):
-                    handle_message(question)
-    
+        with cols[i % 2]:
+            st.markdown(
+                f"""
+                <div style="margin-bottom: 12px;">
+                    <button style="
+                        width: 100%;
+                        padding: 10px 6px;
+                        font-size: 11px;
+                        font-family: 'Oregon', serif;
+                        font-weight: 500;
+                        background: white;
+                        border: 1px solid #ddd;
+                        border-radius: 12px;
+                        box-shadow: 1px 1px 3px rgba(0,0,0,0.08);
+                        cursor: pointer;
+                        transition: all 0.2s ease;
+                        white-space: normal;
+                        word-wrap: break-word;
+                        line-height: 1.3;
+                        text-align: center;
+                    " onclick="parent.postMessage({{type: 'streamlit:sendMessage', message: '{question}' }}, '*')">
+                        {question}
+                    </button>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
     st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+
+
 
 
 
