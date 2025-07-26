@@ -183,6 +183,38 @@ st.markdown("""
             background-color: #ffffff !important;
         }
     }
+
+
+.stButton>button {
+    font-size: 11px !important;
+    padding: 6px 8px !important;
+    min-height: 38px !important;
+    line-height: 1.2 !important;
+    border-radius: 10px !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    box-shadow: 2px 2px 0px #aaa !important;
+    text-align: center !important;
+}
+
+/* Force 2 columns even on small screens */
+.button-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    max-width: 520px;
+    margin: 0 auto 24px auto;
+    padding: 0 8px;
+}
+
+@media (max-width: 480px) {
+  .button-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+}
+
+
     </style>
 """, unsafe_allow_html=True)
 
@@ -256,14 +288,16 @@ questions = [
 ]
 
 # --- FINAL BUTTON LAYOUT (Center-aligned 2-column) ---
+
 with st.container():
-    st.markdown('<div style="max-width: 540px; margin: auto;">', unsafe_allow_html=True)
+    st.markdown('<div class="button-grid">', unsafe_allow_html=True)
     cols = st.columns(2)
     for i, question in enumerate(questions):
         with cols[i % 2]:
             if st.button(question, key=f"btn_{i}"):
                 handle_message(question)
     st.markdown('</div>', unsafe_allow_html=True)
+
 
 
 
