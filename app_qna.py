@@ -21,6 +21,11 @@ st.markdown("""
         font-weight: 300;
         font-style: normal;
     }
+    html, body, .block-container {
+        min-width: 420px !important;
+        max-width: 420px !important;
+        margin: 0 auto !important;
+    }
     html, body, div, input, textarea, button {
         font-family: 'Oregon', 'Georgia', serif !important;
         background-color: #ffffff;
