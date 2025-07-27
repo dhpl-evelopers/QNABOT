@@ -147,60 +147,8 @@ questions = [
     "Do You Have\nReady-to-Buy Rings?", "How Can I Book\nan Appointment?"
 ]
 
-# Enhanced button styling
-st.markdown("""
-<style>
-    /* Main button container */
-    .stButton>button {
-        font-family: 'Oregon', serif !important;
-        font-size: 12px !important;
-        font-weight: 500 !important;
-        border-radius: 12px !important;
-        padding: 12px 8px !important;
-        min-height: 60px !important;
-        line-height: 1.4 !important;
-        white-space: pre-line !important;
-        word-break: keep-all !important;
-        box-shadow: 2px 2px 4px rgba(0,0,0,0.1) !important;
-        background-color: white !important;
-        color: black !important;
-        border: 1px solid #ddd !important;
-        text-align: center !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        margin: 0 auto !important;
-        width: 100% !important;
-        transition: all 0.2s ease !important;
-    }
-    
-    /* Hover effect */
-    .stButton>button:hover {
-        background: #c9a45d !important;
-        color: white !important;
-        transform: translateY(-2px);
-        box-shadow: 2px 4px 6px rgba(0,0,0,0.15) !important;
-    }
-    
-    /* Grid layout adjustments */
-    .stButton {
-        padding: 4px !important;
-    }
-    
-    /* Mobile responsiveness */
-    @media (max-width: 480px) {
-        .stButton>button {
-            font-size: 11px !important;
-            min-height: 55px !important;
-            padding: 8px 4px !important;
-        }
-    }
-</style>
-""", unsafe_allow_html=True)
-
 # Button grid implementation
 with st.container():
-    # Use columns for proper 2-column layout
     for i in range(0, len(questions), 2):
         cols = st.columns(2)
         for j in range(2):
@@ -209,6 +157,78 @@ with st.container():
                 if cols[j].button(questions[i + j], key=f"btn_{i+j}"):
                     handle_message(clean_question)
 
+# Enhanced button styling
+st.markdown("""
+<style>
+    /* Base container adjustments */
+    .main .block-container {
+        padding: 1rem 1rem 0;
+        max-width: 420px;
+        margin: 0 auto;
+    }
+    
+    /* Title styling */
+    .chat-title {
+        font-size: 20px;
+        margin-bottom: 8px;
+    }
+    .helper-text {
+        font-size: 13px;
+        margin-bottom: 20px;
+    }
+    
+    /* Button styling - exact prototype match */
+    .stButton>button {
+        font-family: 'Oregon', serif !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        border-radius: 12px !important;
+        padding: 14px 8px !important;
+        min-height: 70px !important;
+        line-height: 1.35 !important;
+        white-space: pre-line !important;
+        box-shadow: 2px 2px 4px rgba(0,0,0,0.1) !important;
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #ddd !important;
+        text-align: center !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 auto 8px auto !important;
+        width: 100% !important;
+    }
+
+    /* Hover state */
+    .stButton>button:hover {
+        background: #c9a45d !important;
+        color: white !important;
+        transform: translateY(-1px);
+        box-shadow: 2px 3px 6px rgba(0,0,0,0.15) !important;
+    }
+
+    /* Grid layout */
+    .stButton {
+        padding: 0 6px !important;
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 480px) {
+        .stButton>button {
+            font-size: 11px !important;
+            min-height: 60px !important;
+            padding: 10px 6px !important;
+        }
+    }
+</style>
+""", unsafe_allow_html=True)
+
+is_embedded = st.query_params.get("embed") == "1"
+
+
+
+if is_embedded:
+    st.markdown('</div>', unsafe_allow_html=True)
 # Handle message passing from iframe
 if st.query_params.get("embed") == "1":
     from streamlit.components.v1.components import CustomComponent
