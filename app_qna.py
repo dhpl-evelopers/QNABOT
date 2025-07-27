@@ -13,13 +13,9 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- EMBED DETECTION ---
-query_params = st.query_params
-is_embed = query_params.get("embed", ["0"])[0] == "1"
-
-# --- CUSTOM STYLES ---
+# --- CUSTOM FONTS & GLOBAL STYLE ---
 st.markdown("""
-<style>
+    <style>
     @font-face {
         font-family: 'Oregon';
         src: url('https://cdn.shopify.com/s/files/1/0843/6917/8903/files/OregonLDO-Light.woff2') format('woff2');
@@ -30,24 +26,6 @@ st.markdown("""
         font-family: 'Oregon', 'Georgia', serif !important;
         background-color: #ffffff;
         color: #000000;
-    }
-    .chat-title, .helper-text, .stChatMessage {
-        font-family: 'Oregon', serif !important;
-    }
-    [data-testid="stChatInput"] input {
-        font-family: 'Oregon', serif;
-        border-radius: 10px;
-        border: 1px solid #c9a45d !important;
-    }
-    #MainMenu, footer, header {visibility: hidden;}
-    html, body {
-        overflow-x: hidden !important;
-        width: 100% !important;
-    }
-    .block-container {
-        padding-top: 0 !important;
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
     }
     .chat-title {
         font-size: 20px;
@@ -65,33 +43,53 @@ st.markdown("""
         font-size: 15px;
         line-height: 1.6;
     }
-    [data-testid="stChatInput"] {
-        border: 1px solid #c9a45d !important;
+    .button-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        max-width: 420px;
+        margin: 0 auto 24px auto;
+        padding: 0 12px;
+    }
+    .stButton>button {
+        font-family: 'Oregon', serif !important;
+        font-size: 10px !important;
+        font-weight: 500 !important;
         border-radius: 12px !important;
-        padding: 8px !important;
-        max-width: 600px !important;
-        margin: 0 auto !important;
+        padding: 10px 10px !important;
+        min-height: 40px !important;
+        line-height: 1.3 !important;
+        white-space: pre-line !important;
+        word-break: break-word !important;
+        box-shadow: 2px 2px 0px #aaa !important;
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #ccc !important;
+        text-align: center !important;
     }
-    [data-testid="stChatInput"] input {
-        border-radius: 10px !important;
-        padding: 10px 12px !important;
+    .stButton>button:hover {
+        background: #c9a45d !important;
+        color: white !important;
+        transform: translateY(-1px);
     }
-    @media (prefers-color-scheme: dark) {
-        html, body, button, input, textarea {
-            background-color: #ffffff !important;
-            color: #000000 !important;
+    @media (max-width: 480px) {
+        .button-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px !important;
+            max-width: 320px !important;
         }
-        [data-testid="stChatInput"] > div {
-            background-color: #ffffff !important;
+        .stButton>button {
+            font-size: 9px !important;
+            padding: 6px 4px !important;
         }
     }
-</style>
+    </style>
 """, unsafe_allow_html=True)
 
 # --- API CONFIG ---
 CHAT_API_URL = "https://ringexpert-backend.azurewebsites.net/ask"
 
-# --- SESSION INITIALIZATION ---
+# --- SESSION INIT ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "user_id" not in st.session_state:
@@ -113,86 +111,57 @@ def get_cached_response(question):
     response = requests.post(CHAT_API_URL, json={"question": question}, timeout=10)
     response.raise_for_status()
     answer = response.json().get("answer", "Sorry, I didn't understand that.")
-    cleaned = re.sub(r'\[?doc\d+\]?[.:]?', '', answer, flags=re.IGNORECASE)
+    cleaned = re.sub(r'\[?doc\d+\]?[:.]?', '', answer, flags=re.IGNORECASE)
     return cleaned.strip()
 
-# --- MESSAGE HANDLER ---
+# --- HANDLE CHAT ---
 def handle_message(message):
     st.session_state.messages.append({"role": "user", "content": message})
     with st.chat_message("user"):
         st.markdown(message)
-
     try:
         answer = get_cached_response(message)
         with st.chat_message("assistant"):
             stream_response(answer)
         st.session_state.messages.append({"role": "assistant", "content": answer})
     except Exception as e:
-        error_msg = f"⚠ Error: {str(e)}"
-        st.session_state.messages.append({"role": "assistant", "content": error_msg})
-        with st.chat_message("assistant"):
-            st.error(error_msg)
+        st.session_state.messages.append({"role": "assistant", "content": str(e)})
+        st.error(str(e))
 
-# --- UI HEADINGS ---
+# --- UI TITLE ---
 st.markdown('<div class="chat-title">Want to know more about RINGS & I?</div>', unsafe_allow_html=True)
-st.markdown('<div class="helper-text">Tap a Button or Start Typing</div>', unsafe_allow_html=True)
+st.markdown('<div class="helper-text">Tap a button or Start Typing</div>', unsafe_allow_html=True)
 
-# --- QUESTION BUTTONS (CSS grid layout) ---
+# --- QUESTIONS with \n line breaks ---
 questions = [
-    "What Is RINGS & I?", "Where Is Your Studio?",
-    "Natural or Lab-Grown Diamonds?", "What's the Price Range?",
-    "Which Metals Do You Use?", "Which Metal Purities Do You Offer?",
-    "Ring Making & Delivery Time?", "Can I Customize My Ring?",
-    "Do You Have Ready-to-Buy Rings?", "How Can I Book an Appointment?"
+    "What Is\nRINGS & I?", "Where Is\nYour Studio?",
+    "Natural or\nLab-Grown Diamonds?", "What's the\nPrice Range?",
+    "Which Metals\nDo You Use?", "Which Metal\nPurities Do You Offer?",
+    "Ring Making &\nDelivery Time?", "Can I Customize\nMy Ring?",
+    "Do You Have\nReady-to-Buy Rings?", "How Can I Book\nan Appointment?"
 ]
 
-st.markdown('<div class="grid-container">', unsafe_allow_html=True)
-for i, question in enumerate(questions):
-    if st.button(question, key=f"btn_{i}"):
-        handle_message(question)
-st.markdown('</div>', unsafe_allow_html=True)
+# --- BUTTON GRID ---
+# --- BUTTON GRID (2 columns like prototype) ---
+st.markdown('<div class="button-grid">', unsafe_allow_html=True)
+# --- BUTTON GRID in 2 columns using st.columns (works in iframe) ---
+with st.container():
+    for i in range(0, len(questions), 2):
+        cols = st.columns(2)
+        for j in range(2):
+            if i + j < len(questions):
+                label = questions[i + j]
+                clean = label.replace("\\n", " ")
+                if cols[j].button(label, key=f"btn_{i+j}"):
+                    handle_message(clean)
+
+
 
 # --- CHAT HISTORY ---
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# --- EMBED CSS FIX ---
-if is_embed:
-    st.markdown("""
-        <style>
-        .block-container {
-            padding: 1rem !important;
-            max-width: 440px !important;
-            margin: 0 auto !important;
-        }
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            max-width: 440px;
-            margin: 0 auto 24px auto;
-        }
-        .stButton>button {
-            width: 100% !important;
-            font-family: 'Oregon', serif !important;
-            font-size: 11.5px !important;
-            font-weight: 500 !important;
-            padding: 10px 12px !important;
-            border-radius: 12px !important;
-            box-shadow: 2px 2px 0px #aaa !important;
-            white-space: normal !important;
-            background-color: white !important;
-            color: black !important;
-            border: 1px solid #ccc !important;
-        }
-        .stButton>button:hover {
-            background-color: #c9a45d !important;
-            color: white !important;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
-# --- CHAT INPUT ---
+# --- INPUT BOX ---
 if user_input := st.chat_input("Type Anything..."):
     handle_message(user_input)
