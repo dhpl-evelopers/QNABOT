@@ -13,6 +13,7 @@ st.set_page_config(
 )
 
 # --- CUSTOM STYLING ---
+# Replace your entire styling section with this:
 st.markdown("""
 <style>
     @font-face {
@@ -22,98 +23,69 @@ st.markdown("""
         font-style: normal;
     }
     
-    /* Base container */
+    /* Reset all elements */
+    html, body, div, button {
+        font-family: 'Oregon', sans-serif !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+    }
+    
+      /* Base container - smaller */
     .main .block-container {
-        padding: 0.5rem 0.5rem 1rem;
-        max-width: 380px;
-    }
-    
-    /* Header styling */
+        padding: 8px 8px 12px !important;
+        max-width: 360px !important;  /* Reduced from 400px */
+    }/* Title styling - smaller */
     .chat-title {
-        font-size: 16px;
-        font-weight: 600;
-        margin: 0 0 6px 0;
-        text-align: center;
-        color: #000;
+        font-size: 16px !important;  /* Reduced from 18px */
+        margin: 0 0 6px 0 !important;
     }
     
+    /* Subtitle - smaller */
     .helper-text {
-        font-size: 11px;
-        text-align: center;
-        margin-bottom: 16px;
-        color: #555;
+        font-size: 10px !important;  /* Reduced from 12px */
+        margin-bottom: 16px !important;
     }
     
-    /* Button styling - compact version */
+    /* Compact buttons */
     .stButton>button {
-        font-family: 'Oregon', serif !important;
-        font-size: 10px !important;
-        font-weight: 500 !important;
-        border-radius: 10px !important;
-        padding: 8px 6px !important;
-        min-height: 50px !important;
+        font-size: 10px !important;  /* Smaller font */
+        min-height: 50px !important;  /* Reduced from 60px */
+        padding: 8px 6px !important;  /* Tighter padding */
+        margin: 0 0 6px 0 !important;  /* Reduced spacing */
         line-height: 1.3 !important;
-        white-space: pre-line !important;
-        box-shadow: 1px 1px 3px rgba(0,0,0,0.1) !important;
-        background: white !important;
-        color: black !important;
-        border: 1px solid #ddd !important;
-        text-align: center !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        margin: 0 auto 6px !important;
-        width: 100% !important;
-        transition: all 0.2s ease !important;
     }
     
-    .stButton>button:hover {
-        background: #c9a45d !important;
-        color: white !important;
-        transform: translateY(-1px);
-        box-shadow: 1px 2px 4px rgba(0,0,0,0.15) !important;
-    }
-    
-    /* Grid layout */
-    .stButton {
-        padding: 0 4px !important;
-    }
-    
-    /* Chat messages */
-    .stChatMessage {
-        font-size: 12px !important;
-        padding: 8px 12px !important;
-    }
-    
-    /* Input box */
-    .stTextInput>div>div>input {
-        font-size: 12px !important;
-        padding: 8px 12px !important;
+    /* Tighter grid */
+    .stColumns > div {
+        flex: 1 1 calc(50% - 4px) !important;  /* Reduced gap */
+        min-width: calc(50% - 4px) !important;
     }
     
     /* Mobile adjustments */
     @media (max-width: 480px) {
         .main .block-container {
-            padding: 0.5rem 0.25rem 0.75rem;
-            max-width: 100%;
+            padding: 6px 6px 10px !important;
+            max-width: 100% !important;
         }
-        
         .stButton>button {
-            font-size: 9px !important;
             min-height: 45px !important;
-            padding: 6px 4px !important;
-        }
-        
-        .chat-title {
-            font-size: 15px;
-        }
-        
-        .helper-text {
-            font-size: 10px;
+            font-size: 9px !important;
         }
     }
+
+    
+    /* Force 2-column layout */
+    .stColumns > div {
+        flex: 1 1 calc(50% - 6px) !important;
+        min-width: calc(50% - 6px) !important;
+        max-width: calc(50% - 6px) !important;
+    }
+    
+   
 </style>
 """, unsafe_allow_html=True)
+
 
 # --- API CONFIG ---
 CHAT_API_URL = "https://ringexpert-backend.azurewebsites.net/ask"
@@ -154,13 +126,10 @@ def handle_message(message):
         st.session_state.messages.append({"role": "assistant", "content": str(e)})
         st.error(str(e))
 
-
-
 # --- UI COMPONENTS ---
 st.markdown('<div class="chat-title">Want to know more about RINGS & I?</div>', unsafe_allow_html=True)
 st.markdown('<div class="helper-text">Tap a button or Start Typing</div>', unsafe_allow_html=True)
 
-# Define questions list BEFORE using it
 questions = [
     "What Is\nRINGS & I?", "Where Is\nYour Studio?",
     "Natural or\nLab-Grown Diamonds?", "What's the\nPrice Range?",
@@ -169,14 +138,19 @@ questions = [
     "Do You Have\nReady-to-Buy Rings?", "How Can I Book\nan Appointment?"
 ]
 
-# Now use the questions list
+
+# Update your button rendering code:
 with st.container():
-    for i in range(0, len(questions), 2):
-        cols = st.columns(2)
-        for j in range(2):
-            if i + j < len(questions):
-                if cols[j].button(questions[i + j], key=f"btn_{i+j}"):
-                    handle_message(questions[i + j].replace("\n", " "))
+    col1, col2 = st.columns(2)
+    for i, question in enumerate(questions):
+        if i % 2 == 0:
+            with col1:
+                if st.button(question, key=f"btn_{i}"):
+                    handle_message(question.replace("\n", " "))
+        else:
+            with col2:
+                if st.button(question, key=f"btn_{i}"):
+                    handle_message(question.replace("\n", " "))
 
 # --- CHAT HISTORY ---
 for message in st.session_state.messages:
