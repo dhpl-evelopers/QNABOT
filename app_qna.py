@@ -54,6 +54,12 @@ st.markdown("""
         overflow-x: hidden !important;
         width: 100% !important;
     }
+    html, body, .block-container {
+  min-width: 420px !important;
+  max-width: 420px !important;
+  margin: 0 auto !important;
+}
+
     .block-container {
         padding-top: 0 !important;
         padding-left: 1rem !important;
@@ -213,12 +219,24 @@ questions = [
     "Do You Have Ready-to-Buy Rings?", "How Can I Book an Appointment?"
 ]
 with st.container():
-    for i in range(0, len(questions), 2):
-        cols = st.columns(2)
-        for j in range(2):
-            if i + j < len(questions):
-                if cols[j].button(questions[i + j], key=f"btn_{i + j}"):
-                    handle_message(questions[i + j])
+    button_html = '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-width: 420px; margin: auto;">'
+    for i, question in enumerate(questions):
+        button_html += f"""
+        <form action="" method="post">
+            <button name="question" value="{question}" type="submit"
+                style="font-family: 'Oregon', serif; font-size: 13px; padding: 10px; border-radius: 10px;
+                       border: 1px solid #ccc; background: white; box-shadow: 2px 2px #ccc; cursor: pointer;">
+                {question}
+            </button>
+        </form>
+        """
+    button_html += '</div>'
+    st.markdown(button_html, unsafe_allow_html=True)
+
+# Handle manual postback
+if "question" in st.query_params:
+    handle_message(st.query_params["question"])
+
 
 # --- CHAT HISTORY ---
 for message in st.session_state.messages:
