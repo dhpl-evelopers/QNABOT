@@ -1,3 +1,4 @@
+
 import streamlit as st
 import requests
 import uuid
@@ -136,7 +137,7 @@ def handle_message(message):
 st.markdown('<div class="chat-title">Want to know more about RINGS & I?</div>', unsafe_allow_html=True)
 st.markdown('<div class="helper-text">Tap a Button or Start Typing</div>', unsafe_allow_html=True)
 
-# --- QUESTION BUTTONS (2 per row using st.columns) ---
+# --- QUESTION BUTTONS (2-column layout) ---
 questions = [
     "What Is RINGS & I?", "Where Is Your Studio?",
     "Natural or Lab-Grown Diamonds?", "What's the Price Range?",
@@ -146,21 +147,18 @@ questions = [
 ]
 
 with st.container():
-    for i in range(0, len(questions), 2):
-        col1, col2 = st.columns(2)
-        if i < len(questions):
-            if col1.button(questions[i], key=f"btn_{i}"):
-                handle_message(questions[i])
-        if i+1 < len(questions):
-            if col2.button(questions[i+1], key=f"btn_{i+1}"):
-                handle_message(questions[i+1])
+    st.markdown('<div class="button-grid">', unsafe_allow_html=True)
+    for i, question in enumerate(questions):
+        if st.button(question, key=f"btn_{i}"):
+            handle_message(question)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # --- CHAT HISTORY ---
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# --- EMBED CSS FIX ---
+# --- EMBED MODE FIXES ---
 if is_embed:
     st.markdown("""
         <style>
@@ -169,11 +167,16 @@ if is_embed:
             max-width: 440px !important;
             margin: 0 auto !important;
         }
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            max-width: 440px;
+            margin: 0 auto 24px auto;
+        }
         .stButton>button {
             width: 100% !important;
-            font-family: 'Oregon', serif !important;
             font-size: 11.5px !important;
-            font-weight: 500 !important;
             padding: 10px 12px !important;
             border-radius: 12px !important;
             box-shadow: 2px 2px 0px #aaa !important;
