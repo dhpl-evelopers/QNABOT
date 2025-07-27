@@ -170,6 +170,14 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
  
-# --- CHAT INPUT BOX ---
-if user_input := st.chat_input("Type Anything..."):
-    handle_message(user_input)
+if is_embed:
+    st.markdown("""
+        <style>
+        .block-container {
+            padding: 1rem !important;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
