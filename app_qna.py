@@ -64,22 +64,6 @@ st.markdown("""
         font-size: 15px;
         line-height: 1.6;
     }
-    .stButton>button {
-        font-family: 'Oregon', serif !important;
-        font-size: 12px !important;
-        font-weight: 500 !important;
-        border-radius: 12px !important;
-        padding: 10px 12px !important;
-        min-height: 42px !important;
-        line-height: 1.4 !important;
-        white-space: normal !important;
-        word-break: break-word !important;
-        box-shadow: 2px 2px 0px #aaa !important;
-        background-color: white !important;
-        color: black !important;
-        border: 1px solid #ccc !important;
-        text-align: center !important;
-    }
     [data-testid="stChatInput"] {
         border: 1px solid #c9a45d !important;
         border-radius: 12px !important;
@@ -152,7 +136,7 @@ def handle_message(message):
 st.markdown('<div class="chat-title">Want to know more about RINGS & I?</div>', unsafe_allow_html=True)
 st.markdown('<div class="helper-text">Tap a Button or Start Typing</div>', unsafe_allow_html=True)
 
-# --- QUESTION BUTTONS (2 per row using real grid) ---
+# --- QUESTION BUTTONS (2 per row using st.columns) ---
 questions = [
     "What Is RINGS & I?", "Where Is Your Studio?",
     "Natural or Lab-Grown Diamonds?", "What's the Price Range?",
@@ -161,22 +145,15 @@ questions = [
     "Do You Have Ready-to-Buy Rings?", "How Can I Book an Appointment?"
 ]
 
-# --- RENDER BUTTONS AS GRID ---
-st.markdown('<div class="button-grid">', unsafe_allow_html=True)
-for i, question in enumerate(questions):
-    st.markdown(f'''
-        <div class="grid-button">
-            <form action="#" method="post">
-                <button name="custom_btn" type="submit" formaction="?q={question}" class="grid-btn">{question}</button>
-            </form>
-        </div>
-    ''', unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
-
-# --- CAPTURE BUTTON CLICKS ---
-q_param = st.query_params.get("q", [""])[0]
-if q_param:
-    handle_message(q_param)
+with st.container():
+    for i in range(0, len(questions), 2):
+        col1, col2 = st.columns(2)
+        if i < len(questions):
+            if col1.button(questions[i], key=f"btn_{i}"):
+                handle_message(questions[i])
+        if i+1 < len(questions):
+            if col2.button(questions[i+1], key=f"btn_{i+1}"):
+                handle_message(questions[i+1])
 
 # --- CHAT HISTORY ---
 for message in st.session_state.messages:
@@ -192,28 +169,22 @@ if is_embed:
             max-width: 440px !important;
             margin: 0 auto !important;
         }
-        .button-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin: 0 auto 20px auto;
+        .stButton>button {
+            width: 100% !important;
+            font-family: 'Oregon', serif !important;
+            font-size: 11.5px !important;
+            font-weight: 500 !important;
+            padding: 10px 12px !important;
+            border-radius: 12px !important;
+            box-shadow: 2px 2px 0px #aaa !important;
+            white-space: normal !important;
+            background-color: white !important;
+            color: black !important;
+            border: 1px solid #ccc !important;
         }
-        .grid-btn {
-            width: 100%;
-            font-family: 'Oregon', serif;
-            font-size: 12px;
-            font-weight: 500;
-            padding: 10px 12px;
-            border-radius: 12px;
-            background-color: white;
-            color: black;
-            border: 1px solid #ccc;
-            box-shadow: 2px 2px 0px #aaa;
-            cursor: pointer;
-        }
-        .grid-btn:hover {
-            background-color: #c9a45d;
-            color: white;
+        .stButton>button:hover {
+            background-color: #c9a45d !important;
+            color: white !important;
         }
         </style>
     """, unsafe_allow_html=True)
