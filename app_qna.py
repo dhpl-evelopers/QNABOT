@@ -13,7 +13,9 @@ st.set_page_config(
 )
 
 # --- CUSTOM STYLING ---
-# Replace your entire styling section with this:
+# --- CUSTOM STYLING ---
+# --- CUSTOM STYLING ---
+# --- CUSTOM STYLING ---
 st.markdown("""
 <style>
     @font-face {
@@ -23,69 +25,62 @@ st.markdown("""
         font-style: normal;
     }
     
-    /* Reset all elements */
-    html, body, div, button {
-        font-family: 'Oregon', sans-serif !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        box-sizing: border-box !important;
-    }
-    
-      /* Base container - smaller */
+    /* Base container - strict width control */
     .main .block-container {
-        padding: 8px 8px 12px !important;
-        max-width: 360px !important;  /* Reduced from 400px */
-    }/* Title styling - smaller */
-    .chat-title {
-        font-size: 16px !important;  /* Reduced from 18px */
-        margin: 0 0 6px 0 !important;
+        padding: 4px !important;
+        width: 320px !important;
+        min-width: 320px !important;
+        max-width: 320px !important;
+        margin: 0 auto !important;
     }
     
-    /* Subtitle - smaller */
-    .helper-text {
-        font-size: 10px !important;  /* Reduced from 12px */
-        margin-bottom: 16px !important;
+    /* Nuclear column lock */
+    div[data-testid="stHorizontalBlock"] {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        width: 100% !important;
     }
     
-    /* Compact buttons */
-    .stButton>button {
-        font-size: 10px !important;  /* Smaller font */
-        min-height: 50px !important;  /* Reduced from 60px */
-        padding: 8px 6px !important;  /* Tighter padding */
-        margin: 0 0 6px 0 !important;  /* Reduced spacing */
-        line-height: 1.3 !important;
+    div[data-testid="column"] {
+        flex: 0 0 50% !important;
+        min-width: 50% !important;
+        max-width: 50% !important;
+        width: 50% !important;
+        box-sizing: border-box !important;
+        padding: 0 3px !important;
     }
     
-    /* Tighter grid */
-    .stColumns > div {
-        flex: 1 1 calc(50% - 4px) !important;  /* Reduced gap */
-        min-width: calc(50% - 4px) !important;
+    /* Button styling */
+    .stButton {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+    
+    .stButton > button {
+        font-size: 8px !important;
+        min-height: 32px !important;
+        padding: 2px !important;
+        margin: 2px 0 !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        width: 100% !important;
     }
     
     /* Mobile adjustments */
     @media (max-width: 480px) {
-        .main .block-container {
-            padding: 6px 6px 10px !important;
-            max-width: 100% !important;
-        }
-        .stButton>button {
-            min-height: 45px !important;
-            font-size: 9px !important;
+        .stButton > button {
+            font-size: 7px !important;
+            min-height: 28px !important;
         }
     }
-
-    
-    /* Force 2-column layout */
-    .stColumns > div {
-        flex: 1 1 calc(50% - 6px) !important;
-        min-width: calc(50% - 6px) !important;
-        max-width: calc(50% - 6px) !important;
-    }
-    
-   
 </style>
 """, unsafe_allow_html=True)
 
+
+
+# --- UI COMPONENTS ---
+# Shortened questions for mobile compatibility
 
 # --- API CONFIG ---
 CHAT_API_URL = "https://ringexpert-backend.azurewebsites.net/ask"
@@ -130,29 +125,21 @@ def handle_message(message):
 st.markdown('<div class="chat-title">Want to know more about RINGS & I?</div>', unsafe_allow_html=True)
 st.markdown('<div class="helper-text">Tap a button or Start Typing</div>', unsafe_allow_html=True)
 
+# Ultra-compact questions
 questions = [
-    "What Is\nRINGS & I?", "Where Is\nYour Studio?",
-    "Natural or\nLab-Grown Diamonds?", "What's the\nPrice Range?",
-    "Which Metals\nDo You Use?", "Which Metal\nPurities Do You Offer?",
-    "Ring Making &\nDelivery Time?", "Can I Customize\nMy Ring?",
-    "Do You Have\nReady-to-Buy Rings?", "How Can I Book\nan Appointment?"
+    "About", "Location",
+    "Diamonds", "Prices", 
+    "Metals", "Options",
+    "Time", "Custom",
+    "Ready", "Book"
 ]
 
-
-# Update your button rendering code:
-with st.container():
-    col1, col2 = st.columns(2)
-    for i, question in enumerate(questions):
-        if i % 2 == 0:
-            with col1:
-                if st.button(question, key=f"btn_{i}"):
-                    handle_message(question.replace("\n", " "))
-        else:
-            with col2:
-                if st.button(question, key=f"btn_{i}"):
-                    handle_message(question.replace("\n", " "))
-
-# --- CHAT HISTORY ---
+# Create columns with forced layout
+col1, col2 = st.columns(2)
+for i, question in enumerate(questions):
+    with (col1 if i % 2 == 0 else col2):
+        if st.button(question, key=f"btn_{i}"):
+            handle_message(question)
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
