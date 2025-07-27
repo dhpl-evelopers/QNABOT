@@ -3,7 +3,7 @@ import requests
 import uuid
 import time
 import re
- 
+
 # --- PAGE CONFIG ---
 st.set_page_config(
     page_title="AI RingExpert – RINGS & I",
@@ -11,11 +11,12 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
-# ✅ Move this here immediately
+
+# --- EMBED DETECTION ---
 query_params = st.query_params
 is_embed = query_params.get("embed", ["0"])[0] == "1"
 
-# --- CUSTOM FONTS + BASE STYLES ---
+# --- CUSTOM STYLES ---
 st.markdown("""
 <style>
     @font-face {
@@ -101,16 +102,16 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
- 
+
 # --- API CONFIG ---
 CHAT_API_URL = "https://ringexpert-backend.azurewebsites.net/ask"
- 
+
 # --- SESSION INITIALIZATION ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "user_id" not in st.session_state:
     st.session_state.user_id = f"guest_{uuid.uuid4().hex[:8]}"
- 
+
 # --- STREAM RESPONSE ---
 def stream_response(text):
     message_placeholder = st.empty()
@@ -120,7 +121,7 @@ def stream_response(text):
         message_placeholder.markdown(full_response + "▌")
         time.sleep(0.02)
     message_placeholder.markdown(full_response)
- 
+
 # --- API CALL ---
 @st.cache_data(show_spinner=False)
 def get_cached_response(question):
@@ -129,13 +130,13 @@ def get_cached_response(question):
     answer = response.json().get("answer", "Sorry, I didn't understand that.")
     cleaned = re.sub(r'\[?doc\d+\]?[.:]?', '', answer, flags=re.IGNORECASE)
     return cleaned.strip()
- 
+
 # --- MESSAGE HANDLER ---
 def handle_message(message):
     st.session_state.messages.append({"role": "user", "content": message})
     with st.chat_message("user"):
         st.markdown(message)
- 
+
     try:
         answer = get_cached_response(message)
         with st.chat_message("assistant"):
@@ -146,12 +147,12 @@ def handle_message(message):
         st.session_state.messages.append({"role": "assistant", "content": error_msg})
         with st.chat_message("assistant"):
             st.error(error_msg)
- 
+
 # --- UI HEADINGS ---
 st.markdown('<div class="chat-title">Want to know more about RINGS & I?</div>', unsafe_allow_html=True)
 st.markdown('<div class="helper-text">Tap a Button or Start Typing</div>', unsafe_allow_html=True)
- 
-# --- QUESTION BUTTONS (2 per row) ---
+
+# --- QUESTION BUTTONS (2 per row using real grid) ---
 questions = [
     "What Is RINGS & I?", "Where Is Your Studio?",
     "Natural or Lab-Grown Diamonds?", "What's the Price Range?",
@@ -159,20 +160,30 @@ questions = [
     "Ring Making & Delivery Time?", "Can I Customize My Ring?",
     "Do You Have Ready-to-Buy Rings?", "How Can I Book an Appointment?"
 ]
- 
-with st.container():
-    for i in range(0, len(questions), 2):
-        cols = st.columns(2)
-        for j in range(2):
-            if i + j < len(questions):
-                if cols[j].button(questions[i + j], key=f"btn_{i + j}"):
-                    handle_message(questions[i + j])
- 
-# --- DISPLAY CHAT HISTORY ---
+
+# --- RENDER BUTTONS AS GRID ---
+st.markdown('<div class="button-grid">', unsafe_allow_html=True)
+for i, question in enumerate(questions):
+    st.markdown(f'''
+        <div class="grid-button">
+            <form action="#" method="post">
+                <button name="custom_btn" type="submit" formaction="?q={question}" class="grid-btn">{question}</button>
+            </form>
+        </div>
+    ''', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
+
+# --- CAPTURE BUTTON CLICKS ---
+q_param = st.query_params.get("q", [""])[0]
+if q_param:
+    handle_message(q_param)
+
+# --- CHAT HISTORY ---
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
- 
+
+# --- EMBED CSS FIX ---
 if is_embed:
     st.markdown("""
         <style>
@@ -181,16 +192,32 @@ if is_embed:
             max-width: 440px !important;
             margin: 0 auto !important;
         }
-        .stButton {
-            width: 100% !important;
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 0 auto 20px auto;
         }
-        .stButton > button {
-            font-size: 11.5px !important;
-            padding: 10px 12px !important;
-            border-radius: 10px !important;
-            box-shadow: 2px 2px 0 #aaa !important;
-            white-space: normal !important;
+        .grid-btn {
+            width: 100%;
+            font-family: 'Oregon', serif;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 10px 12px;
+            border-radius: 12px;
+            background-color: white;
+            color: black;
+            border: 1px solid #ccc;
+            box-shadow: 2px 2px 0px #aaa;
+            cursor: pointer;
+        }
+        .grid-btn:hover {
+            background-color: #c9a45d;
+            color: white;
         }
         </style>
     """, unsafe_allow_html=True)
 
+# --- CHAT INPUT ---
+if user_input := st.chat_input("Type Anything..."):
+    handle_message(user_input)
