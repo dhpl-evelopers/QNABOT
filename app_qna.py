@@ -11,7 +11,10 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
- 
+# ✅ Move this here immediately
+query_params = st.query_params
+is_embed = query_params.get("embed", ["0"])[0] == "1"
+
 # --- CUSTOM FONTS + BASE STYLES ---
 st.markdown("""
 <style>
