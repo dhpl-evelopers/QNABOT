@@ -178,8 +178,18 @@ if is_embed:
         <style>
         .block-container {
             padding: 1rem !important;
-            max-width: 400px;
-            margin: 0 auto;
+            max-width: 440px !important;
+            margin: 0 auto !important;
+        }
+        .stButton {
+            width: 100% !important;
+        }
+        .stButton > button {
+            font-size: 11.5px !important;
+            padding: 10px 12px !important;
+            border-radius: 10px !important;
+            box-shadow: 2px 2px 0 #aaa !important;
+            white-space: normal !important;
         }
         </style>
     """, unsafe_allow_html=True)
