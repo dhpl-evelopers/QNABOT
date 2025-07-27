@@ -3,7 +3,7 @@ import requests
 import uuid
 import time
 import re
-
+ 
 # --- PAGE CONFIG ---
 st.set_page_config(
     page_title="AI RingExpert – RINGS & I",
@@ -11,20 +11,15 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
-
-# --- CUSTOM FONTS & GLOBAL STYLE ---
+ 
+# --- CUSTOM FONTS + BASE STYLES ---
 st.markdown("""
-    <style>
+<style>
     @font-face {
         font-family: 'Oregon';
         src: url('https://cdn.shopify.com/s/files/1/0843/6917/8903/files/OregonLDO-Light.woff2') format('woff2');
         font-weight: 300;
         font-style: normal;
-    }
-    html, body, .block-container {
-        min-width: 420px !important;
-        max-width: 420px !important;
-        margin: 0 auto !important;
     }
     html, body, div, input, textarea, button {
         font-family: 'Oregon', 'Georgia', serif !important;
@@ -39,27 +34,11 @@ st.markdown("""
         border-radius: 10px;
         border: 1px solid #c9a45d !important;
     }
-    </style>
-""", unsafe_allow_html=True)
-
-# --- EMBED MODE DETECTION ---
-query_params = st.query_params
-is_embed = query_params.get("embed", ["0"])[0] == "1"
-
-# --- CUSTOM CSS ---
-st.markdown("""
-    <style>
     #MainMenu, footer, header {visibility: hidden;}
     html, body {
         overflow-x: hidden !important;
         width: 100% !important;
     }
-    html, body, .block-container {
-  min-width: 420px !important;
-  max-width: 420px !important;
-  margin: 0 auto !important;
-}
-
     .block-container {
         padding-top: 0 !important;
         padding-left: 1rem !important;
@@ -81,14 +60,6 @@ st.markdown("""
         font-size: 15px;
         line-height: 1.6;
     }
-    .button-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-        max-width: 480px;
-        margin: 0 auto 24px auto;
-        padding: 0 12px;
-    }
     .stButton>button {
         font-family: 'Oregon', serif !important;
         font-size: 12px !important;
@@ -105,49 +76,6 @@ st.markdown("""
         border: 1px solid #ccc !important;
         text-align: center !important;
     }
-    .stButton>button:hover {
-        background: #c9a45d !important;
-        color: white !important;
-        transform: translateY(-1px);
-    }
-    @media (prefers-color-scheme: dark) {
-        html, body, button, input, textarea {
-            background-color: #ffffff !important;
-            color: #000000 !important;
-        }
-        [data-testid="stChatInput"] > div {
-            background-color: #ffffff !important;
-        }
-    }
-    @media (max-width: 768px) {
-        .button-grid {
-            gap: 10px !important;
-            padding: 0 8px !important;
-        }
-        .stButton>button {
-            font-size: 11px !important;
-            padding: 8px 6px !important;
-            min-height: 42px !important;
-        }
-    }
-    @media (max-width: 480px) {
-        .button-grid {
-            gap: 8px !important;
-            grid-template-columns: repeat(2, 1fr) !important;
-        }
-        .stButton>button {
-            font-size: 10px !important;
-            padding: 8px 4px !important;
-            min-height: 40px !important;
-        }
-    }
-    @media (max-width: 350px) {
-        .button-grid {
-            grid-template-columns: 1fr !important;
-            max-width: 300px !important;
-            gap: 6px !important;
-        }
-    }
     [data-testid="stChatInput"] {
         border: 1px solid #c9a45d !important;
         border-radius: 12px !important;
@@ -159,18 +87,27 @@ st.markdown("""
         border-radius: 10px !important;
         padding: 10px 12px !important;
     }
-    </style>
+    @media (prefers-color-scheme: dark) {
+        html, body, button, input, textarea {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+        }
+        [data-testid="stChatInput"] > div {
+            background-color: #ffffff !important;
+        }
+    }
+</style>
 """, unsafe_allow_html=True)
-
+ 
 # --- API CONFIG ---
 CHAT_API_URL = "https://ringexpert-backend.azurewebsites.net/ask"
-
+ 
 # --- SESSION INITIALIZATION ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "user_id" not in st.session_state:
     st.session_state.user_id = f"guest_{uuid.uuid4().hex[:8]}"
-
+ 
 # --- STREAM RESPONSE ---
 def stream_response(text):
     message_placeholder = st.empty()
@@ -180,21 +117,22 @@ def stream_response(text):
         message_placeholder.markdown(full_response + "▌")
         time.sleep(0.02)
     message_placeholder.markdown(full_response)
-
+ 
 # --- API CALL ---
 @st.cache_data(show_spinner=False)
 def get_cached_response(question):
     response = requests.post(CHAT_API_URL, json={"question": question}, timeout=10)
     response.raise_for_status()
     answer = response.json().get("answer", "Sorry, I didn't understand that.")
-    cleaned = re.sub(r'\[?doc\d+\]?[:.]?', '', answer, flags=re.IGNORECASE)
+    cleaned = re.sub(r'\[?doc\d+\]?[.:]?', '', answer, flags=re.IGNORECASE)
     return cleaned.strip()
-
-# --- CHAT HANDLER ---
+ 
+# --- MESSAGE HANDLER ---
 def handle_message(message):
     st.session_state.messages.append({"role": "user", "content": message})
     with st.chat_message("user"):
         st.markdown(message)
+ 
     try:
         answer = get_cached_response(message)
         with st.chat_message("assistant"):
@@ -205,12 +143,12 @@ def handle_message(message):
         st.session_state.messages.append({"role": "assistant", "content": error_msg})
         with st.chat_message("assistant"):
             st.error(error_msg)
-
-# --- UI TITLE ---
+ 
+# --- UI HEADINGS ---
 st.markdown('<div class="chat-title">Want to know more about RINGS & I?</div>', unsafe_allow_html=True)
 st.markdown('<div class="helper-text">Tap a Button or Start Typing</div>', unsafe_allow_html=True)
-
-# --- BUTTON GRID ---
+ 
+# --- QUESTION BUTTONS (2 per row) ---
 questions = [
     "What Is RINGS & I?", "Where Is Your Studio?",
     "Natural or Lab-Grown Diamonds?", "What's the Price Range?",
@@ -218,31 +156,20 @@ questions = [
     "Ring Making & Delivery Time?", "Can I Customize My Ring?",
     "Do You Have Ready-to-Buy Rings?", "How Can I Book an Appointment?"
 ]
+ 
 with st.container():
-    button_html = '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-width: 420px; margin: auto;">'
-    for i, question in enumerate(questions):
-        button_html += f"""
-        <form action="" method="post">
-            <button name="question" value="{question}" type="submit"
-                style="font-family: 'Oregon', serif; font-size: 13px; padding: 10px; border-radius: 10px;
-                       border: 1px solid #ccc; background: white; box-shadow: 2px 2px #ccc; cursor: pointer;">
-                {question}
-            </button>
-        </form>
-        """
-    button_html += '</div>'
-    st.markdown(button_html, unsafe_allow_html=True)
-
-# Handle manual postback
-if "question" in st.query_params:
-    handle_message(st.query_params["question"])
-
-
-# --- CHAT HISTORY ---
+    for i in range(0, len(questions), 2):
+        cols = st.columns(2)
+        for j in range(2):
+            if i + j < len(questions):
+                if cols[j].button(questions[i + j], key=f"btn_{i + j}"):
+                    handle_message(questions[i + j])
+ 
+# --- DISPLAY CHAT HISTORY ---
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
-
-# --- INPUT BOX ---
+ 
+# --- CHAT INPUT BOX ---
 if user_input := st.chat_input("Type Anything..."):
     handle_message(user_input)
