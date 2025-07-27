@@ -133,6 +133,12 @@ st.markdown('<div class="chat-title">Want to know more about RINGS & I?</div>', 
 st.markdown('<div class="helper-text">Tap a button or Start Typing</div>', unsafe_allow_html=True)
 
 # --- QUESTIONS with \n line breaks ---
+# --- Replace your questions array and button grid section with this ---
+
+# Questions with explicit line breaks (using HTML <br> tags)
+# --- Replace your questions array and button grid section with this optimized version ---
+
+# Questions with explicit line breaks (using \n for Streamlit)
 questions = [
     "What Is\nRINGS & I?", "Where Is\nYour Studio?",
     "Natural or\nLab-Grown Diamonds?", "What's the\nPrice Range?",
@@ -141,19 +147,85 @@ questions = [
     "Do You Have\nReady-to-Buy Rings?", "How Can I Book\nan Appointment?"
 ]
 
-# --- BUTTON GRID ---
-# --- BUTTON GRID (2 columns like prototype) ---
-st.markdown('<div class="button-grid">', unsafe_allow_html=True)
-# --- BUTTON GRID in 2 columns using st.columns (works in iframe) ---
+# Enhanced button styling
+st.markdown("""
+<style>
+    /* Main button container */
+    .stButton>button {
+        font-family: 'Oregon', serif !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        border-radius: 12px !important;
+        padding: 12px 8px !important;
+        min-height: 60px !important;
+        line-height: 1.4 !important;
+        white-space: pre-line !important;
+        word-break: keep-all !important;
+        box-shadow: 2px 2px 4px rgba(0,0,0,0.1) !important;
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #ddd !important;
+        text-align: center !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 auto !important;
+        width: 100% !important;
+        transition: all 0.2s ease !important;
+    }
+    
+    /* Hover effect */
+    .stButton>button:hover {
+        background: #c9a45d !important;
+        color: white !important;
+        transform: translateY(-2px);
+        box-shadow: 2px 4px 6px rgba(0,0,0,0.15) !important;
+    }
+    
+    /* Grid layout adjustments */
+    .stButton {
+        padding: 4px !important;
+    }
+    
+    /* Mobile responsiveness */
+    @media (max-width: 480px) {
+        .stButton>button {
+            font-size: 11px !important;
+            min-height: 55px !important;
+            padding: 8px 4px !important;
+        }
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Button grid implementation
 with st.container():
+    # Use columns for proper 2-column layout
     for i in range(0, len(questions), 2):
         cols = st.columns(2)
         for j in range(2):
             if i + j < len(questions):
-                label = questions[i + j]
-                clean = label.replace("\\n", " ")
-                if cols[j].button(label, key=f"btn_{i+j}"):
-                    handle_message(clean)
+                clean_question = questions[i + j].replace("\n", " ")
+                if cols[j].button(questions[i + j], key=f"btn_{i+j}"):
+                    handle_message(clean_question)
+
+# Handle message passing from iframe
+if st.query_params.get("embed") == "1":
+    from streamlit.components.v1.components import CustomComponent
+    class IframeMessenger(CustomComponent):
+        def __init__(self):
+            super().__init__()
+            self.js = """
+            window.addEventListener('message', (event) => {
+                if (event.data.type === 'buttonClick') {
+                    window.parent.postMessage({
+                        type: 'buttonClicked',
+                        message: event.data.message
+                    }, '*');
+                }
+            });
+            """
+    IframeMessenger()
 
 
 
